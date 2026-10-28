@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hrvatski — 크로아티아어 학습</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{
+  --ink:#0C1D24;--sea:#1B7A87;--foam:#74C6C0;--stone:#EDEAE1;--stone-dim:#C9C4B7;
+  --sah:#C4362D;--sand:#E4A94A;--line:rgba(237,234,225,0.14);--r:14px;
+  --disp:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Pretendard','Bricolage Grotesque',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--ink);color:var(--stone);font-family:var(--body);line-height:1.55;min-height:100vh;padding:0 0 96px;
+  background-image:radial-gradient(1100px 480px at 78% -12%,rgba(27,122,135,.34),transparent 62%),
+                   radial-gradient(700px 380px at 4% 8%,rgba(196,54,45,.12),transparent 60%);
+  background-attachment:fixed}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+header{padding:32px 0 18px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--foam);opacity:.85}
+h1{font-family:var(--disp);font-weight:800;font-size:clamp(36px,9.5vw,58px);line-height:.95;letter-spacing:-.035em;margin:8px 0 4px}
+h1 .acc{color:var(--sah)}
+.sub{font-size:14px;color:var(--stone-dim);max-width:46ch}
+.board-card{margin-top:22px;padding:16px;border:1px solid var(--line);border-radius:var(--r);
+  background:rgba(255,255,255,.035);display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.sah{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;width:118px;flex-shrink:0}
+.tile{aspect-ratio:1;border-radius:3px;background:rgba(237,234,225,.09);transition:background .5s}
+.tile.on{background:var(--sah)}.tile.on2{background:var(--sea)}.tile.mid{background:rgba(228,169,74,.5)}
+.board-meta{flex:1;min-width:180px;display:flex;gap:20px;flex-wrap:wrap}
+.stat{min-width:70px}
+.board-num{font-family:var(--disp);font-weight:800;font-size:30px;line-height:1;letter-spacing:-.03em}
+.board-num small{font-size:13px;color:var(--stone-dim);font-weight:400;margin-left:3px}
+.board-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--foam)}
+.board-lbl.b{color:var(--sah)}.board-lbl.y{color:var(--sand)}
+.board-note{font-size:12.5px;color:var(--stone-dim);margin-top:8px;flex:1 1 100%}
+nav{position:sticky;top:0;z-index:20;margin-top:22px;background:rgba(12,29,36,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:2px;overflow-x:auto;max-width:760px;margin:0 auto;padding:0 12px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;padding:14px 12px;background:none;border:none;cursor:pointer;font-family:var(--body);font-size:14px;
+  font-weight:600;color:var(--stone-dim);border-bottom:2px solid transparent;white-space:nowrap}
+.tab:hover{color:var(--stone)}
+.tab[aria-selected="true"]{color:var(--stone);border-bottom-color:var(--sah)}
+.tab:focus-visible{outline:2px solid var(--foam);outline-offset:-4px}
+section[hidden]{display:none}
+section{padding-top:24px}
+h2{font-family:var(--disp);font-weight:700;font-size:24px;letter-spacing:-.02em;margin-bottom:4px}
+.h2sub{font-size:13px;color:var(--stone-dim);margin-bottom:16px}
+.alpha-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.al{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.03);cursor:pointer;
+  text-align:left;color:inherit;font-family:var(--body);transition:border-color .2s,background .2s}
+.al:hover{border-color:var(--foam);background:rgba(116,198,192,.08)}
+.al-l{font-family:var(--disp);font-weight:700;font-size:22px}
+.al-k{font-size:15px;color:var(--foam);margin-top:1px}
+.al-t{font-size:12px;color:var(--stone-dim);margin-top:3px;line-height:1.4}
+.al.special{border-color:rgba(228,169,74,.4)}.al.special .al-l{color:var(--sand)}
+.callout{border-left:3px solid var(--sand);background:rgba(228,169,74,.09);padding:12px 14px;border-radius:0 10px 10px 0;margin:16px 0;font-size:13.5px}
+.callout b{color:var(--sand)}
+.filterbar{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none;padding-bottom:2px}
+.filterbar::-webkit-scrollbar{display:none}
+.chipf{flex:0 0 auto;padding:6px 12px;border-radius:20px;border:1px solid var(--line);background:none;
+  color:var(--stone-dim);font-family:var(--body);font-size:12.5px;cursor:pointer;white-space:nowrap}
+.chipf[aria-pressed="true"]{background:rgba(116,198,192,.18);border-color:var(--foam);color:var(--stone)}
+/* 학습 단계 */
+.ladder{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.dots{display:flex;gap:4px}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(237,234,225,.16)}
+.dot.f{background:var(--sand)}.dot.f.done{background:var(--sah)}
+.stage-name{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--sand)}
+.stage-name.done{color:var(--sah)}
+.study{border:1px solid var(--line);border-radius:var(--r);background:rgba(255,255,255,.04);overflow:hidden}
+.st-top{padding:26px 20px 20px;text-align:center;background:linear-gradient(165deg,rgba(27,122,135,.26),transparent)}
+.st-icon{font-size:clamp(46px,13vw,64px);line-height:1;filter:drop-shadow(0 6px 16px rgba(0,0,0,.35))}
+.st-main{font-family:var(--disp);font-weight:800;font-size:clamp(28px,7.5vw,42px);letter-spacing:-.03em;margin-top:10px;line-height:1.08}
+.st-main.ko{font-family:var(--body);font-weight:600;font-size:clamp(22px,5.5vw,30px);letter-spacing:0}
+.st-read{font-family:var(--mono);font-size:14.5px;color:var(--sand);margin-top:4px}
+.st-ko{font-size:18px;font-weight:600;margin-top:8px}
+.st-note{font-family:var(--mono);font-size:11px;color:var(--stone-dim);letter-spacing:.1em;margin-top:5px}
+.st-ask{font-size:13px;color:var(--stone-dim);margin-top:8px}
+.st-hint{font-family:var(--mono);font-size:22px;letter-spacing:.28em;color:var(--foam);margin-top:10px}
+.st-ex{margin:14px 18px 0;padding:12px 14px;border-radius:10px;background:rgba(0,0,0,.2);font-size:14px;text-align:left}
+.st-ex b{font-family:var(--disp);font-weight:700}
+.st-ex span{display:block;color:var(--stone-dim);font-size:12.5px;margin-top:2px}
+.st-body{padding:16px 18px 18px}
+.score{display:flex;gap:20px;justify-content:center;margin-bottom:6px}
+.score div{text-align:center}
+.score b{font-family:var(--disp);font-size:26px;display:block;line-height:1}
+.score span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim)}
+.q-prompt{font-family:var(--disp);font-weight:800;font-size:clamp(28px,7vw,40px);letter-spacing:-.03em;text-align:center;padding:22px 12px 6px}
+.q-hint{text-align:center;font-family:var(--mono);font-size:12px;color:var(--stone-dim);margin-bottom:18px}
+.opts{display:grid;gap:8px}
+.opt{padding:13px 15px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--stone);
+  text-align:left;font-family:var(--body);font-size:15px;cursor:pointer;transition:background .18s,border-color .18s}
+.opt.hr{font-family:var(--disp);font-weight:700;font-size:17px}
+.opt:hover:not(:disabled){background:rgba(255,255,255,.1);border-color:var(--foam)}
+.opt:focus-visible{outline:2px solid var(--foam);outline-offset:2px}
+.opt.right{background:rgba(116,198,192,.22);border-color:var(--foam)}
+.opt.wrong{background:rgba(196,54,45,.22);border-color:var(--sah)}
+.opt:disabled{cursor:default}
+.tinput{width:100%;padding:14px;border-radius:11px;border:1px solid var(--line);background:rgba(0,0,0,.22);
+  color:var(--stone);font-family:var(--disp);font-weight:700;font-size:19px}
+.tinput:focus{outline:none;border-color:var(--foam)}
+.tinput::placeholder{color:var(--stone-dim);opacity:.4;font-weight:400;font-size:15px}
+.dia{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.dia button{padding:6px 11px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+  color:var(--sand);font-family:var(--disp);font-weight:700;font-size:15px;cursor:pointer}
+.dia button:hover{background:rgba(228,169,74,.15)}
+.verdict{margin-top:12px;padding:13px 15px;border-radius:11px;font-size:14px;display:none}
+.verdict.show{display:block}
+.verdict.ok{background:rgba(116,198,192,.14);border:1px solid rgba(116,198,192,.4)}
+.verdict.no{background:rgba(196,54,45,.14);border:1px solid rgba(196,54,45,.4)}
+.verdict.near{background:rgba(228,169,74,.14);border:1px solid rgba(228,169,74,.4)}
+.verdict-hr{font-family:var(--disp);font-weight:700;font-size:18px;margin-top:4px}
+.verdict-hr .w{color:var(--sah);text-decoration:underline wavy var(--sah) 1.5px}
+.verdict-r{font-family:var(--mono);font-size:12.5px;color:var(--sand);margin-top:2px}
+.btnrow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{flex:1;min-width:104px;padding:13px 16px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+  color:var(--stone);font-family:var(--body);font-size:14.5px;font-weight:600;cursor:pointer;transition:transform .12s,background .2s}
+.btn:hover{background:rgba(255,255,255,.1)}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:2px solid var(--foam);outline-offset:2px}
+.btn.primary{background:var(--sea);border-color:var(--sea)}
+.btn.primary:hover{background:#22909F}
+.btn.ghost{flex:0 0 auto;min-width:50px}
+.status{font-family:var(--mono);font-size:11.5px;color:var(--stone-dim);letter-spacing:.06em;text-align:center;margin-top:10px}
+.switch{display:flex;gap:4px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:11px;padding:3px;margin-bottom:12px}
+.sw{flex:1;padding:9px 4px;border:none;border-radius:8px;background:none;color:var(--stone-dim);font-family:var(--body);
+  font-size:13.5px;font-weight:600;cursor:pointer;transition:background .2s,color .2s}
+.sw[aria-pressed="true"]{background:var(--sah);color:#fff}
+.task{border:1px solid var(--line);border-radius:var(--r);background:rgba(255,255,255,.04);padding:20px 18px}
+.task-lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--foam);margin-bottom:8px}
+.task-ko{font-size:20px;font-weight:600;line-height:1.4}
+.task-ctx{font-size:12.5px;color:var(--stone-dim);margin-top:5px}
+.slot{min-height:60px;margin-top:16px;padding:9px;border-radius:11px;border:1px dashed var(--line);background:rgba(0,0,0,.18);
+  display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.slot.ok{border-color:var(--foam);border-style:solid;background:rgba(116,198,192,.1)}
+.slot.no{border-color:var(--sah);border-style:solid;background:rgba(196,54,45,.1)}
+.pool{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:9px 13px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--stone);
+  font-family:var(--disp);font-weight:700;font-size:16px;cursor:pointer;transition:transform .12s,background .2s}
+.chip:hover{background:rgba(255,255,255,.13)}
+.chip:active{transform:scale(.95)}
+.chip.used{opacity:.22;pointer-events:none}
+.row{display:flex;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.row-hr{font-family:var(--disp);font-weight:700;font-size:16px;flex:1;min-width:0}
+.row-hr i{display:block;font-family:var(--mono);font-style:normal;font-size:12px;color:var(--sand);font-weight:400;margin-top:1px}
+.row-ko{font-size:14px;color:var(--stone-dim);text-align:right;flex:0 1 44%}
+.spk{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--foam);cursor:pointer;font-size:13px;align-self:center}
+.spk:hover{background:rgba(116,198,192,.14)}
+.group{margin-bottom:24px}
+.group-h{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--foam);
+  padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:2px}
+.tablewrap{overflow-x:auto;margin-bottom:8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:420px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--foam);font-weight:500}
+td.hr{font-family:var(--disp);font-weight:700}
+td.q{color:var(--stone-dim);font-size:12.5px}
+tr:last-child td{border-bottom:none}
+.foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--stone-dim);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.linkbtn{background:none;border:none;color:var(--stone-dim);text-decoration:underline;cursor:pointer;font-family:var(--body);font-size:12px;padding:0}
+.linkbtn:hover{color:var(--sah)}
+@media (max-width:520px){.row{flex-wrap:wrap}.row-ko{text-align:left;flex:1 1 100%}.sah{width:100px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0C1D24"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon.svg"></head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">Hrvatski jezik · 30 slova, 7 padeža</div>
+  <h1>크로아티아어<br><span class="acc">읽는 대로</span> 쓴다</h1>
+  <p class="sub">단어는 보여주기 → 뜻 고르기 → 단어 고르기 → 철자 채우기 → 직접 쓰기, 다섯 단계를 통과해야 외운 것으로 칩니다.</p>
+  <div class="board-card">
+    <div class="sah" id="sah" aria-hidden="true"></div>
+    <div class="board-meta">
+      <div class="stat"><div class="board-lbl b">외운 단어</div><div class="board-num"><span id="mastered">0</span><small>/ <span id="total">0</span></small></div></div>
+      <div class="stat"><div class="board-lbl y">학습 중</div><div class="board-num" id="learning">0</div></div>
+      <div class="stat"><div class="board-lbl">쓴 문장</div><div class="board-num"><span id="p-done">0</span><small>/ <span id="p-total">0</span></small></div></div>
+      <div class="board-note" id="due-note"></div>
+    </div>
+  </div>
+</header>
+</div>
+<nav><div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-t="abc" aria-selected="true">발음</button>
+  <button class="tab" role="tab" data-t="words" aria-selected="false">단어</button>
+  <button class="tab" role="tab" data-t="phrases" aria-selected="false">회화</button>
+  <button class="tab" role="tab" data-t="grammar" aria-selected="false">문법</button>
+  <button class="tab" role="tab" data-t="quiz" aria-selected="false">퀴즈</button>
+</div></nav>
+<div class="wrap">
+
+<section id="abc">
+  <h2>알파벳 30자</h2>
+  <p class="h2sub">Gajica. 글자와 소리가 1:1로 대응하므로 예외 발음이 없습니다. 글자를 누르면 소리를 들려줍니다.</p>
+  <div class="alpha-grid" id="alpha"></div>
+  <div class="callout"><b>한국인이 자주 틀리는 것</b><br>
+    <b>ne</b>는 "네"로 읽지만 뜻은 <b>아니오</b>. "네"는 <b>da</b>.<br>
+    <b>r</b>은 혼자서 모음 역할을 합니다 — <i>vrt</i> 브르트, <i>prst</i> 프르스트.<br>
+    <b>č/ć</b>, <b>dž/đ</b>는 원어민도 구어에서 거의 구분하지 않습니다. 초보 단계에서는 넘어가세요.</div>
+</section>
+
+<section id="words" hidden>
+  <h2>단어 암기</h2>
+  <p class="h2sub">한 단어는 다섯 단계를 거칩니다. 틀리면 한 단계 내려가고, 마지막 단계를 통과하면 장기 복습으로 넘어갑니다.</p>
+  <div class="switch" id="w-switch" role="group">
+    <button class="sw" data-wm="learn" aria-pressed="true">학습</button>
+    <button class="sw" data-wm="list" aria-pressed="false">전체 목록</button>
+  </div>
+  <div class="filterbar" id="w-filter"></div>
+
+  <div id="w-learn">
+    <div class="ladder"><div class="dots" id="dots"></div><div class="stage-name" id="stage-name">—</div></div>
+    <div class="study">
+      <div class="st-top" id="st-top"></div>
+      <div class="st-body" id="st-body"></div>
+    </div>
+    <div class="btnrow" id="w-btns"></div>
+    <div class="status" id="w-status"></div>
+  </div>
+
+  <div id="w-list" hidden></div>
+</section>
+
+<section id="phrases" hidden>
+  <h2>문장 만들기</h2>
+  <p class="h2sub">읽고 넘기는 대신 직접 조립하고 씁니다. 두 번 맞히면 완료 처리됩니다.</p>
+  <div class="switch" id="p-switch" role="group">
+    <button class="sw" data-m="build" aria-pressed="true">조각 조립</button>
+    <button class="sw" data-m="write" aria-pressed="false">작문</button>
+    <button class="sw" data-m="list" aria-pressed="false">목록</button>
+  </div>
+  <div class="filterbar" id="p-filter"></div>
+  <div id="p-train">
+    <div class="task">
+      <div class="task-lbl" id="p-lbl"></div>
+      <div class="task-ko" id="p-ko"></div>
+      <div class="task-ctx" id="p-ctx"></div>
+      <div id="p-body"></div>
+      <div class="verdict" id="p-verdict"></div>
+    </div>
+    <div class="btnrow" id="p-btns"></div>
+    <div class="status" id="p-status"></div>
+  </div>
+  <div id="p-list" hidden></div>
+</section>
+
+<section id="grammar" hidden>
+  <h2>뼈대 문법</h2>
+  <p class="h2sub">크로아티아어는 어순이 아니라 어미가 문장의 역할을 정합니다.</p>
+  <div class="group"><div class="group-h">1 · 7격 (padeži)</div>
+    <div class="tablewrap"><table><thead><tr><th>격</th><th>질문</th><th>grad 남</th><th>žena 여</th><th>selo 중</th></tr></thead><tbody id="case-table"></tbody></table></div>
+    <div class="callout">전치사가 격을 강제합니다. <b>u grad</b>(도시로, 대격=이동) vs <b>u gradu</b>(도시에서, 처격=위치).</div>
+  </div>
+  <div class="group"><div class="group-h">2 · biti / imati</div>
+    <div class="tablewrap"><table><thead><tr><th>인칭</th><th>biti 짧은형</th><th>biti 부정</th><th>imati</th><th>imati 부정</th></tr></thead><tbody id="biti-table"></tbody></table></div>
+    <p class="h2sub" style="margin-top:8px">짧은형(sam, si, je…)은 문장 첫머리에 올 수 없습니다.</p></div>
+  <div class="group"><div class="group-h">3 · 현재형 3유형</div>
+    <div class="tablewrap"><table><thead><tr><th>인칭</th><th>-am형 čitati</th><th>-im형 govoriti</th><th>-em형 pisati</th></tr></thead><tbody id="verb-table"></tbody></table></div></div>
+  <div class="group"><div class="group-h">4 · 과거형 — 아주 쉽다</div>
+    <p class="h2sub">동사 어간 + <b>-o / -la / -lo</b> (화자 성별) + biti 짧은형. 남자가 "먹었다"면 <b>Jeo sam.</b>, 여자면 <b>Jela sam.</b></p>
+    <div class="tablewrap"><table><thead><tr><th>동사</th><th>남성</th><th>여성</th><th>뜻</th></tr></thead><tbody id="past-table"></tbody></table></div></div>
+  <div class="group"><div class="group-h">5 · 숫자 뒤의 명사</div>
+    <p class="h2sub"><b>1</b> → 주격 (jedan kruh) · <b>2–4</b> → 단수 속격 (dva piva, tri kave) · <b>5 이상</b> → 복수 속격 (pet piva, deset eura).</p></div>
+</section>
+
+<section id="quiz" hidden>
+  <h2>4지선다 퀴즈</h2>
+  <p class="h2sub">전체 단어 중 무작위 출제. 학습 사다리 단계에는 영향을 주지 않는 자유 테스트입니다.</p>
+  <div class="filterbar" id="q-filter"></div>
+  <div class="score">
+    <div><b id="q-correct">0</b><span>정답</span></div>
+    <div><b id="q-total">0</b><span>문제</span></div>
+    <div><b id="q-streak">0</b><span>연속</span></div>
+  </div>
+  <div class="q-prompt" id="q-prompt">시작</div>
+  <div class="q-hint" id="q-hint">아래 버튼을 누르세요</div>
+  <div class="opts" id="q-opts"></div>
+  <div class="btnrow"><button class="btn primary" id="q-next">문제 시작</button></div>
+</section>
+
+<div class="foot"><span>진도는 이 기기에 저장됩니다.</span><button class="linkbtn" id="reset">진도 초기화</button></div>
+</div>
+
+<script>
+/* ══════════ 알파벳 ══════════ */
+const ALPHABET=[
+ ['A a','아','항상 짧고 또렷하게'],['B b','ㅂ','bok 복'],['C c','츠','영어 ts. 절대 ㅋ 아님',1],
+ ['Č č','치(굳은)','혀를 뒤로. 영어 church',1],['Ć ć','치(부드러운)','혀를 입천장에. noć 노치',1],
+ ['D d','ㄷ','dan 단'],['Dž dž','즈(굳은)','영어 judge',1],['Đ đ','즈(부드러운)','đak 자크 = 학생',1],
+ ['E e','에','항상 짧은 에'],['F f','ㅍ(f)','윗니를 아랫입술에'],['G g','ㄱ','언제나 굳은 소리'],
+ ['H h','ㅎ(거친)','목 안쪽에서. 독일어 ch'],['I i','이',''],['J j','이(y)','ja 야 = 나',1],
+ ['K k','ㅋ',''],['L l','ㄹ','혀끝을 앞니 뒤에'],['Lj lj','리(ly)','ljubav 류바브 = 사랑',1],
+ ['M m','ㅁ',''],['N n','ㄴ',''],['Nj nj','니(ñ)','konj 코니 = 말',1],['O o','오',''],
+ ['P p','ㅍ',''],['R r','ㄹ(굴림)','혀를 떨어서. 모음 역할도 함',1],['S s','ㅅ','언제나 ㅅ'],
+ ['Š š','시(sh)','šest 셰스트 = 6',1],['T t','ㅌ',''],['U u','우',''],['V v','v','성대 울림'],
+ ['Z z','z','울리는 ㅈ. 영어 zoo'],['Ž ž','ㅈ(부드러운)','프랑스어 j. žena 제나',1]
+];
+
+/* ══════════ 단어 : hr|발음|뜻|아이콘|메모|예문|예문뜻 ══════════ */
+const WDATA={
+'인사·표현':`
+dobar dan|도바르 단|안녕하세요 (낮 인사)|☀️||Dobar dan, izvolite?|안녕하세요, 뭘 드릴까요?
+dobro jutro|도브로 유트로|좋은 아침|🌅||Dobro jutro!|좋은 아침이에요!
+dobra večer|도브라 베체르|좋은 저녁|🌆||Dobra večer, imate li stol?|좋은 저녁이요, 자리 있나요?
+laku noć|라쿠 노치|잘 자요|🌙||Laku noć!|잘 자요!
+bok|복|안녕 (친한 사이)|👋|만날 때·헤어질 때 모두|Bok, kako si?|안녕, 잘 지내?
+doviđenja|도비제냐|안녕히 가세요|🚪||Doviđenja!|안녕히 가세요!
+hvala|흐발라|고맙습니다|🙏||Hvala lijepa!|정말 고맙습니다!
+molim|몰림|부탁합니다 / 천만에요|🤲|청할 때도 답할 때도|Molim vas!|저기요!
+oprostite|오프로스티테|실례합니다 (존댓말)|😬||Oprostite, gdje je izlaz?|실례지만 출구가 어디예요?
+oprosti|오프로스티|미안 (반말)|🙇||Oprosti, kasnim.|미안, 늦었어.
+izvolite|이즈볼리테|여기 있습니다 / 말씀하세요|🫴||Izvolite vaš račun.|계산서 여기 있습니다.
+da|다|네|✅||Da, naravno.|네, 물론이죠.
+ne|네|아니오|❌|소리에 속지 말 것|Ne, hvala.|아니요, 괜찮습니다.
+možda|모즈다|아마도|🤔||Možda sutra.|아마 내일요.
+naravno|나라브노|물론|💯||Naravno da može.|물론 됩니다.
+dobro|도브로|좋아, 잘|👌||Dobro, idemo.|좋아, 가자.
+nema na čemu|네마 나 체무|천만에요|🤗||Nema na čemu.|천만에요.
+vidimo se|비디모 세|또 봐요|👀||Vidimo se sutra.|내일 봐요.
+dobrodošli|도브로도슐리|환영합니다|🎉||Dobrodošli u Hrvatsku!|크로아티아에 오신 걸 환영합니다!
+sretno|스레트노|행운을 빌어요|🍀||Sretno!|행운을 빌어요!
+`,
+'사람·가족':`
+čovjek|초비예크|사람, 남자|🧍|남성|Taj čovjek je moj prijatelj.|저 사람은 제 친구입니다.
+žena|제나|여자, 아내|👩|여성|Ona je moja žena.|그녀는 제 아내입니다.
+muškarac|무슈카라츠|남자|👨|남성|On je visok muškarac.|그는 키 큰 남자입니다.
+dijete|디예테|아이|🧒|중성|Dijete spava.|아이가 자고 있어요.
+dječak|디예차크|소년|👦|남성|Dječak trči.|소년이 달립니다.
+djevojka|디예보이카|소녀, 여자친구|👧|여성|Ona je moja djevojka.|그녀는 제 여자친구입니다.
+obitelj|오비텔|가족|👨‍👩‍👧|여성|Moja obitelj je u Koreji.|제 가족은 한국에 있습니다.
+majka|마이카|어머니|👩‍🦰|여성 · 구어 mama|Moja majka kuha.|어머니가 요리하십니다.
+otac|오타츠|아버지|👨‍🦳|남성 · 구어 tata|Moj otac radi.|아버지는 일하십니다.
+sin|신|아들|🧑|남성|Imam sina.|아들이 있습니다.
+kći|크치|딸|👩‍🦱|여성 (자음 끝이지만 여성)|Imam kćer.|딸이 있습니다.
+brat|브라트|형제|🧑‍🤝‍🧑|남성|Moj brat je star.|제 형은 나이가 많습니다.
+sestra|세스트라|자매|👭|여성|Moja sestra čita.|제 언니가 책을 읽습니다.
+prijatelj|프리야텔|친구|👬|남성|On je moj prijatelj.|그는 제 친구입니다.
+suprug|수프루그|남편|🤵|남성|Moj suprug je ovdje.|제 남편은 여기 있습니다.
+baka|바카|할머니|👵|여성|Baka je stara.|할머니는 나이가 많으십니다.
+djed|디예드|할아버지|👴|남성|Djed spava.|할아버지가 주무십니다.
+`,
+'음식·음료':`
+voda|보다|물|💧|여성|Molim vas, čašu vode.|물 한 잔 주세요.
+kruh|크루흐|빵|🍞|남성|Kupujem kruh.|빵을 삽니다.
+kava|카바|커피|☕|여성|Volim kavu.|커피를 좋아합니다.
+čaj|차이|차|🍵|남성|Jedan čaj, molim.|차 하나 주세요.
+pivo|피보|맥주|🍺|중성|Jedno pivo, molim.|맥주 하나 주세요.
+vino|비노|와인|🍷|중성|Crno vino je dobro.|레드 와인이 좋네요.
+mlijeko|믈리예코|우유|🥛|중성|Pijem mlijeko.|우유를 마십니다.
+sok|소크|주스|🧃|남성|Jedan sok, molim.|주스 하나 주세요.
+sir|시르|치즈|🧀|남성|Volim sir.|치즈를 좋아합니다.
+meso|메소|고기|🥩|중성|Ne jedem meso.|고기를 먹지 않습니다.
+riba|리바|생선, 물고기|🐟|여성|Jedem ribu.|생선을 먹습니다.
+piletina|필레티나|닭고기|🍗|여성|Piletina je dobra.|닭고기가 맛있네요.
+povrće|포브르체|채소|🥦|중성|Jedem povrće.|채소를 먹습니다.
+voće|보체|과일|🍇|중성|Voće je svježe.|과일이 신선합니다.
+jabuka|야부카|사과|🍎|여성|Jedem jabuku.|사과를 먹습니다.
+rajčica|라이치차|토마토|🍅|여성|Rajčica je crvena.|토마토는 빨갛습니다.
+krumpir|크룸피르|감자|🥔|남성|Volim krumpir.|감자를 좋아합니다.
+jaje|야예|달걀|🥚|중성|Jedem jaje.|달걀을 먹습니다.
+sol|솔|소금|🧂|여성 (자음 끝이지만 여성)|Nema soli.|소금이 없습니다.
+šećer|셰체르|설탕|🍬|남성|Bez šećera, molim.|설탕 빼고 주세요.
+doručak|도루차크|아침 식사|🍳|남성|Kada je doručak?|아침 식사는 몇 시예요?
+ručak|루차크|점심|🍽️|남성|Ručak je gotov.|점심이 준비됐습니다.
+večera|베체라|저녁 식사|🍲|여성|Večera je odlična.|저녁이 훌륭합니다.
+sladoled|슬라돌레드|아이스크림|🍦|남성|Jedan sladoled, molim.|아이스크림 하나 주세요.
+kolač|콜라치|케이크, 과자|🍰|남성|Kolač je sladak.|케이크가 답니다.
+juha|유하|수프|🥣|여성|Juha je vruća.|수프가 뜨겁습니다.
+`,
+'장소':`
+grad|그라드|도시|🏙️|남성|Idem u grad.|시내에 갑니다.
+kuća|쿠차|집|🏠|여성|Ovo je moja kuća.|여기가 제 집입니다.
+stan|스탄|아파트|🏢|남성|Stan je malen.|아파트가 작습니다.
+ulica|울리차|거리, 길|🛣️|여성|Ulica je uska.|길이 좁습니다.
+trg|트르그|광장|⛲|남성 · 모음 없는 단어|Trg je velik.|광장이 큽니다.
+more|모레|바다|🌊|중성|More je toplo.|바다가 따뜻합니다.
+plaža|플라자|해변|🏖️|여성|Idemo na plažu.|해변에 갑니다.
+otok|오토크|섬|🏝️|남성|Otok je lijep.|섬이 아름답습니다.
+planina|플라니나|산|⛰️|여성|Planina je visoka.|산이 높습니다.
+rijeka|리예카|강|🏞️|여성|Rijeka je duga.|강이 깁니다.
+šuma|슈마|숲|🌲|여성|Šuma je tiha.|숲이 고요합니다.
+trgovina|트르고비나|상점|🏬|여성|Trgovina je zatvorena.|가게가 닫혔습니다.
+tržnica|트르주니차|시장|🧺|여성|Idem na tržnicu.|시장에 갑니다.
+restoran|레스토란|식당|🍴|남성|Restoran je pun.|식당이 꽉 찼습니다.
+kavana|카바나|카페|☕|여성|Sjedimo u kavani.|카페에 앉아 있습니다.
+hotel|호텔|호텔|🏨|남성|Hotel je blizu.|호텔이 가깝습니다.
+kolodvor|콜로드보르|역, 터미널|🚉|남성|Gdje je kolodvor?|역이 어디예요?
+zračna luka|즈라치나 루카|공항|✈️|여성|Idem u zračnu luku.|공항에 갑니다.
+banka|반카|은행|🏦|여성|Banka je zatvorena.|은행이 닫혔습니다.
+bolnica|볼니차|병원|🏥|여성|Gdje je bolnica?|병원이 어디예요?
+ljekarna|리예카르나|약국|💊|여성|Trebam ljekarnu.|약국이 필요해요.
+crkva|츠르크바|교회, 성당|⛪|여성|Crkva je stara.|성당이 오래되었습니다.
+muzej|무제이|박물관|🏛️|남성|Muzej je otvoren.|박물관이 열려 있습니다.
+toalet|토알레트|화장실|🚻|남성|Gdje je toalet?|화장실이 어디예요?
+`,
+'여행·교통':`
+put|푸트|길, 여행|🧭|남성|Sretan put!|좋은 여행 되세요!
+karta|카르타|표, 지도|🎫|여성|Jednu kartu, molim.|표 한 장 주세요.
+autobus|아우토부스|버스|🚌|남성|Autobus kasni.|버스가 늦습니다.
+vlak|블라크|기차|🚆|남성|Vlak je brz.|기차가 빠릅니다.
+brod|브로드|배|🛳️|남성|Brod polazi.|배가 출발합니다.
+trajekt|트라예크트|페리|⛴️|남성|Trajekt za otok?|섬 가는 페리요?
+avion|아비온|비행기|✈️|남성|Avion kasni.|비행기가 연착됩니다.
+auto|아우토|자동차|🚗|남성|Auto je nov.|차가 새것입니다.
+taksi|탁시|택시|🚕|남성|Trebam taksi.|택시가 필요해요.
+prtljaga|프르틀랴가|짐|🧳|여성|Gdje je moja prtljaga?|제 짐이 어디 있나요?
+putovnica|푸토브니차|여권|🛂|여성|Izgubio sam putovnicu.|여권을 잃어버렸어요.
+soba|소바|방|🛏️|여성|Soba je čista.|방이 깨끗합니다.
+ključ|클류치|열쇠|🔑|남성|Ključ, molim.|열쇠 주세요.
+cijena|치예나|가격|🏷️|여성|Cijena je previsoka.|가격이 너무 높습니다.
+novac|노바츠|돈|💶|남성|Nemam novca.|돈이 없습니다.
+račun|라춘|계산서|🧾|남성|Račun, molim.|계산서 주세요.
+`,
+'시간':`
+dan|단|날, 낮|🌞|남성|Danas je lijep dan.|오늘은 좋은 날이네요.
+noć|노치|밤|🌌|여성 (자음 끝이지만 여성)|Laku noć!|잘 자요!
+jutro|유트로|아침|🌄|중성|Jutro je hladno.|아침이 춥습니다.
+večer|베체르|저녁|🌇|여성|Večer je topla.|저녁이 따뜻합니다.
+tjedan|티예단|주|🗓️|남성|Ovaj tjedan radim.|이번 주에 일합니다.
+mjesec|미예세츠|달 (月·moon)|🌙|남성|Ovaj mjesec putujem.|이번 달에 여행합니다.
+godina|고디나|해, 년|📅|여성|Ovo je dobra godina.|좋은 한 해입니다.
+sat|사트|시간, 시계|⏰|남성|Koliko je sati?|몇 시예요?
+minuta|미누타|분|⏱️|여성|Pet minuta, molim.|5분만요.
+danas|다나스|오늘|📆||Danas ne mogu.|오늘은 안 됩니다.
+sutra|수트라|내일|➡️||Vidimo se sutra.|내일 봐요.
+jučer|유체르|어제|⬅️||Jučer sam radio.|어제 일했습니다.
+sada|사다|지금|⏳||Sada idem.|지금 갑니다.
+uvijek|우비예크|항상|♾️||Uvijek pijem kavu.|항상 커피를 마십니다.
+nikad|니카드|절대 ~않다|🚫|동사 앞에 ne도 함께|Nikad ne pijem.|절대 마시지 않습니다.
+`,
+'요일':`
+ponedjeljak|포네디옐랴크|월요일|1️⃣|남성|U ponedjeljak radim.|월요일에 일합니다.
+utorak|우토라크|화요일|2️⃣|남성|Utorak je slobodan.|화요일은 비어 있습니다.
+srijeda|스리예다|수요일|3️⃣|여성|U srijedu putujem.|수요일에 여행합니다.
+četvrtak|체트브르타크|목요일|4️⃣|남성|Vidimo se u četvrtak.|목요일에 봐요.
+petak|페타크|금요일|5️⃣|남성|Petak je najbolji.|금요일이 최고입니다.
+subota|수보타|토요일|6️⃣|여성|U subotu spavam.|토요일엔 잡니다.
+nedjelja|네디옐랴|일요일|7️⃣|여성|Nedjelja je mirna.|일요일은 고요합니다.
+`,
+'동사':`
+biti|비티|이다, 있다|🟰|sam si je smo ste su|Ja sam student.|저는 학생입니다.
+imati|이마티|가지다|🤲|imam imaš ima|Imam vremena.|시간이 있습니다.
+ići|이치|가다|🚶|idem ideš ide|Idem kući.|집에 갑니다.
+doći|도치|오다|🔜|dođem dođeš dođe|Dođi ovamo!|이리 와!
+jesti|예스티|먹다|🍽️|jedem jedeš jede|Jedem kruh.|빵을 먹습니다.
+piti|피티|마시다|🥤|pijem piješ pije|Pijem vodu.|물을 마십니다.
+raditi|라디티|일하다, 하다|🔨|radim radiš radi|Što radiš?|뭐 해?
+govoriti|고보리티|말하다|💬|govorim govoriš govori|Govorim malo hrvatski.|크로아티아어를 조금 합니다.
+znati|즈나티|알다|💡|znam znaš zna|Ne znam.|모르겠습니다.
+moći|모치|할 수 있다|💪|mogu možeš može|Možete li pomoći?|도와주실 수 있나요?
+htjeti|흐티예티|원하다|🙋|hoću hoćeš hoće|Hoću kavu.|커피를 원합니다.
+vidjeti|비디예티|보다|👀|vidim vidiš vidi|Vidim more.|바다가 보입니다.
+čitati|치타티|읽다|📚|čitam čitaš čita|Čitam knjigu.|책을 읽습니다.
+pisati|피사티|쓰다|✍️|pišem pišeš piše|Pišem pismo.|편지를 씁니다.
+živjeti|지비예티|살다|🏡|živim živiš živi|Živim u Seulu.|서울에 삽니다.
+voljeti|볼리예티|사랑하다, 좋아하다|❤️|volim voliš voli|Volim te.|사랑해.
+spavati|스파바티|자다|😴|spavam spavaš spava|Spavam osam sati.|여덟 시간 잡니다.
+kupiti|쿠피티|사다|🛒|kupim kupiš kupi|Želim kupiti kartu.|표를 사고 싶습니다.
+platiti|플라티티|지불하다|💳|platim platiš plati|Želim platiti.|계산하고 싶습니다.
+tražiti|트라지티|찾다|🔎|tražim tražiš traži|Tražim hotel.|호텔을 찾고 있습니다.
+čekati|체카티|기다리다|⏳|čekam čekaš čeka|Čekam te.|기다릴게.
+pomoći|포모치|돕다|🆘|pomognem pomogneš|Možete li mi pomoći?|도와주시겠어요?
+razumjeti|라주미예티|이해하다|🧠|razumijem razumiješ|Ne razumijem.|이해하지 못했어요.
+misliti|미슬리티|생각하다|💭|mislim misliš misli|Mislim da da.|그런 것 같아요.
+dati|다티|주다|🎁|dam daš da|Daj mi vodu.|물 좀 줘.
+uzeti|우제티|가져가다, 취하다|✋|uzmem uzmeš uzme|Uzet ću ovo.|이걸로 할게요.
+otvoriti|오트보리티|열다|🔓|otvorim otvoriš|Otvorite prozor.|창문을 여세요.
+zatvoriti|자트보리티|닫다|🔒|zatvorim zatvoriš|Zatvoreno je.|닫혔습니다.
+putovati|푸토바티|여행하다|🧳|putujem putuješ|Putujem u Split.|스플리트로 여행합니다.
+učiti|우치티|배우다, 공부하다|📓|učim učiš uči|Učim hrvatski.|크로아티아어를 배웁니다.
+slušati|슬루샤티|듣다|👂|slušam slušaš|Slušam glazbu.|음악을 듣습니다.
+trebati|트레바티|필요하다|❗|trebam trebaš|Trebam pomoć.|도움이 필요합니다.
+željeti|젤리예티|바라다, 원하다|🌠|želim želiš želi|Želim vodu.|물을 원합니다.
+plivati|플리바티|수영하다|🏊|plivam plivaš|Plivam u moru.|바다에서 수영합니다.
+hodati|호다티|걷다|🚶|hodam hodaš|Hodam polako.|천천히 걷습니다.
+kuhati|쿠하티|요리하다|🍳|kuham kuhaš|Kuham večeru.|저녁을 요리합니다.
+`,
+'형용사':`
+dobar|도바르|좋은|👍|여성 dobra, 중성 dobro|Dobar dan!|좋은 날! (안녕하세요)
+loš|로시|나쁜|👎|loša, loše|Vrijeme je loše.|날씨가 안 좋네요.
+velik|벨리크|큰|🐘|velika, veliko|Grad je velik.|도시가 큽니다.
+malen|말렌|작은|🐁|malena, maleno|Kuća je malena.|집이 작습니다.
+nov|노브|새로운|✨|nova, novo|Auto je nov.|차가 새것입니다.
+star|스타르|오래된, 나이 든|🏚️|stara, staro|Grad je star.|도시가 오래되었습니다.
+lijep|리예프|아름다운|🌸|lijepa, lijepo|Lijep dan!|좋은 날이네요!
+skup|스쿠프|비싼|💎|skupa, skupo|Ovo je skupo.|이건 비싸네요.
+jeftin|예프틴|싼|🏷️|jeftina, jeftino|Ovo je jeftino.|이건 쌉니다.
+brz|브르즈|빠른|🐆|brza, brzo|Vlak je brz.|기차가 빠릅니다.
+spor|스포르|느린|🐢|spora, sporo|Autobus je spor.|버스가 느립니다.
+topao|토파오|따뜻한|🔥|topla, toplo|Kava je topla.|커피가 따뜻합니다.
+hladan|흘라단|차가운|🧊|hladna, hladno|Voda je hladna.|물이 차갑습니다.
+vruć|브루치|뜨거운|🥵|vruća, vruće|Juha je vruća.|수프가 뜨겁습니다.
+sretan|스레탄|행복한|😊|sretna, sretno|Sretan sam.|행복합니다.
+tužan|투잔|슬픈|😢|tužna, tužno|Tužna sam.|슬픕니다. (여성 화자)
+umoran|우모란|피곤한|😮‍💨|umorna|Umoran sam.|피곤합니다. (남성 화자)
+gladan|글라단|배고픈|🍽️|gladna|Gladan sam.|배고픕니다.
+žedan|제단|목마른|🥤|žedna|Žedan sam.|목마릅니다.
+ukusan|우쿠산|맛있는|😋|ukusna, ukusno|Hrana je ukusna.|음식이 맛있습니다.
+težak|테자크|어려운, 무거운|🏋️|teška, teško|Hrvatski je težak.|크로아티아어는 어렵습니다.
+lak|라크|쉬운, 가벼운|🪶|laka, lako|To je lako.|그건 쉽습니다.
+dug|두그|긴|📏|duga, dugo|Put je dug.|길이 깁니다.
+kratak|크라타크|짧은|✂️|kratka, kratko|Film je kratak.|영화가 짧습니다.
+`,
+'색':`
+crven|츠르벤|빨간|🔴|crvena, crveno|Vino je crveno.|와인이 붉습니다.
+plav|플라브|파란|🔵|plava, plavo|More je plavo.|바다가 파랗습니다.
+zelen|젤렌|초록의|🟢|zelena, zeleno|Šuma je zelena.|숲이 푸릅니다.
+žut|주트|노란|🟡|žuta, žuto|Sunce je žuto.|해가 노랗습니다.
+crn|츠른|검은|⚫|crna, crno|Crna kava, molim.|블랙커피 주세요.
+bijel|비옐|하얀|⚪|bijela, bijelo|Bijelo vino.|화이트 와인.
+siv|시브|회색의|🩶|siva, sivo|Nebo je sivo.|하늘이 잿빛입니다.
+smeđ|스메지|갈색의|🟤|smeđa, smeđe|Kruh je smeđ.|빵이 갈색입니다.
+`,
+'숫자':`
+nula|눌라|0|0️⃣||Nula stupnjeva.|0도입니다.
+jedan|예단|1|1️⃣|여성 jedna, 중성 jedno|Jedan kruh, molim.|빵 하나 주세요.
+dva|드바|2|2️⃣|뒤에 단수 속격|Dva piva, molim.|맥주 둘 주세요.
+tri|트리|3|3️⃣|뒤에 단수 속격|Tri kave, molim.|커피 셋 주세요.
+četiri|체티리|4|4️⃣|뒤에 단수 속격|Četiri sata.|네 시입니다.
+pet|페트|5|5️⃣|5부터 복수 속격|Pet eura.|5유로입니다.
+šest|셰스트|6|6️⃣||Šest sati.|여섯 시입니다.
+sedam|세담|7|7️⃣||Sedam dana.|7일입니다.
+osam|오삼|8|8️⃣||Osam sati.|여덟 시간입니다.
+devet|데베트|9|9️⃣||Devet sati.|아홉 시입니다.
+deset|데세트|10|🔟||Deset eura.|10유로입니다.
+jedanaest|예다나에스트|11|1️⃣1️⃣||Jedanaest sati.|열한 시입니다.
+dvanaest|드바나에스트|12|1️⃣2️⃣||Dvanaest mjeseci.|열두 달입니다.
+dvadeset|드바데세트|20|2️⃣0️⃣||Dvadeset eura.|20유로입니다.
+trideset|트리데세트|30|3️⃣0️⃣||Trideset minuta.|30분입니다.
+pedeset|페데세트|50|5️⃣0️⃣||Pedeset eura.|50유로입니다.
+sto|스토|100|💯||Sto posto.|100퍼센트.
+tisuću|티수추|1000|🔢||Tisuću eura.|1000유로입니다.
+`,
+'기능어':`
+ja|야|나|🙋||Ja sam iz Koreje.|저는 한국에서 왔습니다.
+ti|티|너|👉||Kako si ti?|너는 어때?
+on|온|그|👨||On je ovdje.|그는 여기 있습니다.
+ona|오나|그녀|👩||Ona radi.|그녀는 일합니다.
+mi|미|우리|👥||Mi smo turisti.|우리는 관광객입니다.
+vi|비|당신, 너희|🫵|존댓말 주어|Vi ste ljubazni.|당신은 친절하시네요.
+tko|트코|누구|❓||Tko je to?|저건 누구예요?
+što|슈토|무엇|❔||Što je to?|저건 뭐예요?
+gdje|그디예|어디|📍||Gdje je toalet?|화장실이 어디예요?
+kada|카다|언제|🕐||Kada polazi vlak?|기차가 언제 출발해요?
+zašto|자슈토|왜|🤷||Zašto ne?|왜 안 돼요?
+kako|카코|어떻게|🔧||Kako ste?|어떻게 지내세요?
+koliko|콜리코|얼마나|📊||Koliko košta?|얼마예요?
+ovdje|오브디예|여기|📌||Ovdje, molim.|여기요.
+tamo|타모|저기|👉||Tamo je banka.|저기에 은행이 있습니다.
+i|이|그리고|➕||Kava i kolač.|커피와 케이크.
+ali|알리|그러나|↩️||Dobro je, ali skupo.|좋은데 비싸요.
+ili|일리|또는|🔀||Čaj ili kava?|차요, 커피요?
+s|스|~와 함께|🤝|모음 앞에서는 sa|Kava s mlijekom.|우유 넣은 커피.
+bez|베즈|~없이|🚫|뒤에 속격|Bez šećera.|설탕 없이.
+za|자|~를 위해|🎯||Za dvije osobe.|두 사람이요.
+u|우|~안에, ~로|📥|이동은 대격, 위치는 처격|Idem u grad.|시내에 갑니다.
+vrlo|브를로|매우|⬆️||Vrlo dobro.|아주 좋습니다.
+malo|말로|조금|🤏||Govorim malo.|조금 합니다.
+`
+};
+
+/* ══════════ 문장 ══════════ */
+const PDATA={
+'첫 마디':`
+Kako ste?|카코 스테|어떻게 지내세요?|존댓말
+Kako si?|카코 시|잘 지내?|반말
+Dobro sam, hvala.|도브로 삼 흐발라|잘 지냅니다, 고마워요.|안부에 대한 기본 답
+Kako se zovete?|카코 세 조베테|성함이 어떻게 되세요?|존댓말
+Kako se zoveš?|카코 세 조베시|이름이 뭐야?|반말
+Ja sam iz Koreje.|야 삼 이즈 코레예|저는 한국에서 왔습니다.|iz 뒤에는 속격
+Odakle ste?|오다클레 스테|어디서 오셨어요?|출신을 물을 때
+Drago mi je.|드라고 미 예|만나서 반갑습니다.|악수하며
+Ovo je moj prijatelj.|오보 예 모이 프리야텔|이쪽은 제 친구입니다.|소개할 때
+Prvi put sam ovdje.|프르비 푸트 삼 오브디예|여기는 처음입니다.|
+`,
+'막혔을 때':`
+Ne razumijem.|네 라주미옘|이해하지 못했어요.|ne가 동사 앞에서 부정
+Ne govorim hrvatski.|네 고보림 흐르바츠키|크로아티아어를 못합니다.|가장 먼저 외울 방어 문장
+Govorim malo hrvatski.|고보림 말로 흐르바츠키|크로아티아어를 조금 합니다.|호감을 사는 한 마디
+Govorite li engleski?|고보리테 리 엔글레스키|영어 하세요?|li가 의문을 만든다
+Molim vas, sporije.|몰림 바스 스포리예|조금 천천히요.|sporije = 더 느리게
+Možete li ponoviti?|모제테 리 포노비티|다시 말씀해 주시겠어요?|moći + li = 정중한 요청
+Kako se to kaže?|카코 세 토 카제|그건 어떻게 말해요?|단어를 물을 때
+Što znači to?|슈토 즈나치 토|그게 무슨 뜻이에요?|
+Možete li napisati?|모제테 리 나피사티|적어 주시겠어요?|숫자를 못 알아들었을 때
+Ne znam.|네 즈남|모르겠습니다.|
+`,
+'카페 · 식당':`
+Jedno pivo, molim.|예드노 피보 몰림|맥주 하나 주세요.|pivo는 중성 → jedno
+Jednu kavu, molim.|예드누 카부 몰림|커피 한 잔 주세요.|kava 여성 대격 → jednu kavu
+Imate li jelovnik?|이마테 리 옐로브니크|메뉴판 있나요?|자리에 앉자마자
+Što preporučujete?|슈토 프레포루추예테|뭘 추천하세요?|현지 음식을 고를 때
+Za dvije osobe, molim.|자 드비예 오소베 몰림|두 사람이요.|자리를 청할 때
+Bez mesa, molim.|베즈 메사 몰림|고기 빼고 주세요.|bez 뒤에는 속격
+Račun, molim.|라춘 몰림|계산서 주세요.|자리에서 계산하는 것이 보통
+Mogu li platiti karticom?|모구 리 플라티티 카르티촘|카드로 계산할 수 있나요?|
+Bilo je odlično.|빌로 예 오들리치노|아주 훌륭했어요.|나가면서 한 마디
+Živjeli!|지비옐리|건배!|잔을 부딪히며
+`,
+'상점 · 길':`
+Koliko košta?|콜리코 코슈타|얼마예요?|물건을 가리키며
+Preskupo je.|프레스쿠포 예|너무 비싸요.|pre- = 지나치게
+Imate li ovo manje?|이마테 리 오보 마니예|이거 더 작은 거 있나요?|
+Samo gledam.|사모 글레담|그냥 구경만 할게요.|점원이 다가올 때
+Uzet ću ovo.|우제트 추 오보|이걸로 할게요.|ću = 미래 조동사
+Gdje je toalet?|그디예 예 토알레트|화장실이 어디예요?|gdje = 어디
+Gdje je bankomat?|그디예 예 반코마트|현금인출기가 어디예요?|
+Je li daleko?|예 리 달레코|먼가요?|
+Idem u grad.|이뎀 우 그라드|시내에 갑니다.|u + 대격 = 이동
+Možete li mi pokazati na karti?|모제테 리 미 포카자티 나 카르티|지도에서 보여주시겠어요?|
+`,
+'숙소':`
+Imam rezervaciju.|이맘 레제르바치유|예약했습니다.|체크인 첫 마디
+Imate li slobodnu sobu?|이마테 리 슬로보드누 소부|빈 방 있나요?|
+Za koliko noći?|자 콜리코 노치|몇 박이요?|직원이 묻는 말
+Za dvije noći.|자 드비예 노치|2박이요.|noć 여성 → dvije
+Gdje je moja soba?|그디예 예 모야 소바|제 방이 어디예요?|
+Ključ, molim.|클류치 몰림|열쇠 주세요.|
+Ne radi klima.|네 라디 클리마|에어컨이 안 돼요.|고장 신고
+Ima li WiFi?|이마 리 와이파이|와이파이 있어요?|
+Kada je doručak?|카다 예 도루차크|아침 식사는 몇 시예요?|
+Mogu li ostaviti prtljagu?|모구 리 오스타비티 프르틀랴구|짐을 맡길 수 있나요?|체크아웃 후
+`,
+'교통':`
+Gdje je kolodvor?|그디예 예 콜로드보르|역이 어디예요?|버스·기차역 모두 kolodvor
+Jednu kartu, molim.|예드누 카르투 몰림|표 한 장 주세요.|
+Kada polazi vlak?|카다 폴라지 블라크|기차가 언제 출발해요?|
+Koliko traje put?|콜리코 트라예 푸트|얼마나 걸려요?|
+Idem u Split.|이뎀 우 스플리트|스플리트에 갑니다.|
+Gdje trebam izaći?|그디예 트레밤 이자치|어디서 내려야 해요?|
+Je li ovo pravi autobus?|예 리 오보 프라비 아우토부스|이 버스 맞나요?|
+Molim vas, stanite ovdje.|몰림 바스 스타니테 오브디예|여기서 세워 주세요.|택시에서
+Kasni li vlak?|카스니 리 블라크|기차가 연착되나요?|
+Trajekt za otok?|트라예크트 자 오토크|섬 가는 페리요?|
+`,
+'응급 · 병원':`
+Pomozite mi!|포모지테 미|도와주세요!|
+Zovite hitnu!|조비테 히트누|구급차 불러 주세요!|hitna pomoć = 응급차
+Zovite policiju!|조비테 폴리치유|경찰 불러 주세요!|
+Boli me ovdje.|볼리 메 오브디예|여기가 아파요.|아픈 곳을 가리키며
+Boli me glava.|볼리 메 글라바|머리가 아파요.|
+Trebam liječnika.|트레밤 리예치니카|의사가 필요해요.|
+Gdje je ljekarna?|그디예 예 리예카르나|약국이 어디예요?|
+Imam alergiju.|이맘 알레르기유|알레르기가 있어요.|
+Izgubio sam torbu.|이즈구비오 삼 토르부|가방을 잃어버렸어요.|남성 화자 · 여성은 Izgubila
+Nije hitno.|니예 히트노|급하진 않아요.|
+`,
+'시간 · 약속':`
+Koliko je sati?|콜리코 예 사티|몇 시예요?|
+U koliko sati?|우 콜리코 사티|몇 시에요?|약속 시간을 물을 때
+Vidimo se sutra.|비디모 세 수트라|내일 봐요.|
+Jeste li slobodni?|예스테 리 슬로보드니|시간 있으세요?|
+Kasnim malo.|카스님 말로|조금 늦어요.|
+Čekam te.|체캄 테|기다릴게.|반말
+Danas ne mogu.|다나스 네 모구|오늘은 안 돼요.|
+Može sutra?|모제 수트라|내일 괜찮아요?|
+Nemam vremena.|네맘 브레메나|시간이 없어요.|nemam 뒤에는 속격
+Do sutra!|도 수트라|내일 봐요!|헤어지며
+`,
+'감정 · 잡담':`
+Sviđa mi se.|스비자 미 세|마음에 들어요.|직역: 그것이 내게 든다
+Ne sviđa mi se.|네 스비자 미 세|마음에 안 들어요.|
+Umoran sam.|우모란 삼|피곤해요.|남성 화자 · 여성은 Umorna
+Gladan sam.|글라단 삼|배고파요.|남성 화자 · 여성은 Gladna
+Žedan sam.|제단 삼|목말라요.|
+Super je!|수페르 예|최고예요!|
+Nema problema.|네마 프로블레마|문제없어요.|
+Ne brini.|네 브리니|걱정 마.|
+Baš lijepo!|바시 리예포|정말 좋네요!|
+Volim Hrvatsku.|볼림 흐르바츠쿠|크로아티아를 좋아해요.|Hrvatska 대격 → Hrvatsku
+`
+};
+
+const CASES=[
+ ['Nominativ 주격','누가 / 무엇이','grad','žena','selo'],
+ ['Genitiv 속격','누구의 / 없음·부분','grada','žene','sela'],
+ ['Dativ 여격','누구에게','gradu','ženi','selu'],
+ ['Akuzativ 대격','누구를 / 이동 방향','grad','ženu','selo'],
+ ['Vokativ 호격','부를 때','grade','ženo','selo'],
+ ['Lokativ 처격','어디에 (전치사 필수)','gradu','ženi','selu'],
+ ['Instrumental 조격','무엇으로 / 누구와','gradom','ženom','selom']];
+const BITI=[['ja 나','sam','nisam','imam','nemam'],['ti 너','si','nisi','imaš','nemaš'],
+ ['on/ona','je','nije','ima','nema'],['mi 우리','smo','nismo','imamo','nemamo'],
+ ['vi 당신','ste','niste','imate','nemate'],['oni/one','su','nisu','imaju','nemaju']];
+const VERBS=[['ja','čitam','govorim','pišem'],['ti','čitaš','govoriš','pišeš'],['on/ona','čita','govori','piše'],
+ ['mi','čitamo','govorimo','pišemo'],['vi','čitate','govorite','pišete'],['oni/one','čitaju','govore','pišu']];
+const PAST=[['biti','bio sam','bila sam','~였다'],['imati','imao sam','imala sam','가졌다'],
+ ['ići','išao sam','išla sam','갔다'],['jesti','jeo sam','jela sam','먹었다'],
+ ['piti','pio sam','pila sam','마셨다'],['raditi','radio sam','radila sam','일했다'],
+ ['vidjeti','vidio sam','vidjela sam','봤다'],['kupiti','kupio sam','kupila sam','샀다']];
+
+/* ══════════ 파싱 ══════════ */
+function parseW(){
+  const out=[];
+  for(const cat in WDATA){
+    WDATA[cat].trim().split('\n').forEach(l=>{
+      const [hr,r,ko,i,n,ex,exko]=l.split('|');
+      out.push({hr,r,ko,c:cat,i:i||'📘',n:n||'',ex:ex||'',exko:exko||''});
+    });
+  }
+  return out;
+}
+function parseP(){
+  const out=[];
+  for(const g in PDATA){
+    PDATA[g].trim().split('\n').forEach(l=>{
+      const [hr,r,ko,ctx]=l.split('|');
+      out.push({hr,r,ko,ctx:ctx||'',g});
+    });
+  }
+  return out;
+}
+const WORDS=parseW(), ALLP=parseP();
+const CATS=['전체',...Object.keys(WDATA)];
+const PGROUPS=['전체',...Object.keys(PDATA)];
+
+/* ══════════ 저장소 ══════════ */
+const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+/* 동기화: Firebase Realtime DB REST. 주소(URL)+코드는 기기마다 한 번 입력 → 같은 코드면 같은 진도 */
+const cloud={
+  url(){const u=ls.g('hr:db'),c=ls.g('hr:code');return u&&c?u.replace(/\/$/,'')+'/hr/'+encodeURIComponent(c)+'.json':null;},
+  async pull(){const u=this.url();if(!u)return null;try{return await (await fetch(u)).json();}catch(e){return null;}},
+  async push(v){const u=this.url();if(!u)return;try{await fetch(u,{method:'PUT',body:JSON.stringify({t:Date.now(),v})});}catch(e){}}
+};
+const store={
+  async get(k){
+    const loc=ls.g(k), lt=+ls.g(k+':t')||0, c=await cloud.pull();
+    if(c&&c.v&&c.t>lt){ls.s(k,c.v);ls.s(k+':t',c.t);return c.v;}
+    return loc;
+  },
+  async set(k,v){const t=Date.now();ls.s(k,v);ls.s(k+':t',t);cloud.push(v);}
+};
+function setupSync(){
+  const u=prompt('Firebase Realtime DB 주소 (예: https://내프로젝트-default-rtdb.firebaseio.com)',ls.g('hr:db')||'');
+  if(u===null)return;
+  const c=prompt('동기화 코드 (모든 기기에서 같은 값, 남이 알기 어려운 문자열)',ls.g('hr:code')||'');
+  if(!c)return;
+  ls.s('hr:db',u.trim());ls.s('hr:code',c.trim());
+  if(confirm('설정 완료. 새로고침해서 불러올까요?'))location.reload();
+}
+const KEY='hr:v3';
+const INT=[0, 30e3, 120e3, 600e3, 864e5, 14*864e5];
+const STAGES=['새 단어','뜻 고르기','단어 고르기','철자 채우기','직접 쓰기','복습'];
+const LIMIT=12;
+let srs={}, psrs={};
+
+async function load(){
+  const raw=await store.get(KEY);
+  if(raw){try{const o=JSON.parse(raw);srs=o.w||{};psrs=o.p||{};}catch(e){}}
+  WORDS.forEach(w=>{if(!srs[w.hr])srs[w.hr]={box:0,due:0};});
+  ALLP.forEach(p=>{if(!psrs[p.hr])psrs[p.hr]={n:0};});
+}
+async function save(){await store.set(KEY,JSON.stringify({w:srs,p:psrs}));}
+
+/* ══════════ 진도판 ══════════ */
+const sahEl=document.getElementById('sah');
+for(let i=0;i<25;i++){const d=document.createElement('div');d.className='tile';sahEl.appendChild(d);}
+function renderBoard(){
+  const mw=WORDS.filter(w=>srs[w.hr].box>=5).length;
+  const lw=WORDS.filter(w=>srs[w.hr].box>0&&srs[w.hr].box<5).length;
+  const mp=ALLP.filter(p=>psrs[p.hr].n>=2).length;
+  const onW=Math.round(mw/WORDS.length*25), onP=Math.round(mp/ALLP.length*25);
+  const onL=Math.min(25-onW-onP,Math.round(lw/WORDS.length*25));
+  [...sahEl.children].forEach((t,i)=>{
+    t.className='tile';
+    if(i<onW)t.classList.add('on');
+    else if(i<onW+onL)t.classList.add('mid');
+    else if(i>=25-onP)t.classList.add('on2');
+  });
+  document.getElementById('mastered').textContent=mw;
+  document.getElementById('total').textContent=WORDS.length;
+  document.getElementById('learning').textContent=lw;
+  document.getElementById('p-done').textContent=mp;
+  document.getElementById('p-total').textContent=ALLP.length;
+  const due=WORDS.filter(w=>srs[w.hr].box>0&&srs[w.hr].due<=Date.now()).length;
+  document.getElementById('due-note').textContent=
+    `붉은 칸 = 외운 단어, 노란 칸 = 학습 중, 청록 칸 = 완성한 문장. 지금 복습할 단어 ${due}개.`;
+}
+
+/* ══════════ 발음 ══════════ */
+function speak(t){
+  if(!('speechSynthesis' in window))return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='hr-HR';u.rate=.82;speechSynthesis.speak(u);}catch(e){}
+}
+const alphaEl=document.getElementById('alpha');
+ALPHABET.forEach(([l,k,t,s])=>{
+  const b=document.createElement('button');
+  b.className='al'+(s?' special':'');
+  b.innerHTML=`<div class="al-l">${l}</div><div class="al-k">${k}</div>${t?`<div class="al-t">${t}</div>`:''}`;
+  b.onclick=()=>speak(l.split(' ')[1]||l);
+  alphaEl.appendChild(b);
+});
+
+/* ══════════ 공통 ══════════ */
+const DEACC={'č':'c','ć':'c','š':'s','ž':'z','đ':'d'};
+function norm(s){return s.toLowerCase().split('').map(c=>DEACC[c]||c).join('').replace(/[.,!?;:…"']/g,'').replace(/\s+/g,' ').trim();}
+function shuffle(a){return a.slice().sort(()=>Math.random()-.5);}
+function mkBtn(row,l,c,f){const b=document.createElement('button');b.className='btn '+c;b.innerHTML=l;b.onclick=f;row.appendChild(b);return b;}
+
+/* ══════════ 단어 암기 ══════════ */
+let wCat='전체', wMode='learn', cur=null, wAnswered=false;
+const wf=document.getElementById('w-filter');
+CATS.forEach(c=>{
+  const b=document.createElement('button');
+  b.className='chipf';b.textContent=c;b.setAttribute('aria-pressed',String(c==='전체'));
+  b.onclick=()=>{wCat=c;[...wf.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));refreshWords();};
+  wf.appendChild(b);
+});
+function activeWords(){return wCat==='전체'?WORDS:WORDS.filter(w=>w.c===wCat);}
+function refreshWords(){ wMode==='learn' ? pickWord() : renderWordList(); }
+document.querySelectorAll('#w-switch .sw').forEach(sw=>{
+  sw.onclick=()=>{
+    wMode=sw.dataset.wm;
+    document.querySelectorAll('#w-switch .sw').forEach(x=>x.setAttribute('aria-pressed',String(x===sw)));
+    const list=wMode==='list';
+    document.getElementById('w-list').hidden=!list;
+    document.getElementById('w-learn').hidden=list;
+    refreshWords();
+  };
+});
+function renderWordList(){
+  const el=document.getElementById('w-list'); el.innerHTML='';
+  const cats=wCat==='전체'?CATS.slice(1):[wCat];
+  cats.forEach(c=>{
+    const wrap=document.createElement('div');wrap.className='group';
+    wrap.innerHTML=`<div class="group-h">${c}</div>`;
+    WORDS.filter(w=>w.c===c).forEach(w=>{
+      const box=srs[w.hr].box;
+      const mark=box>=5?' ●':(box>0?' ◐':'');
+      const row=document.createElement('div');row.className='row';
+      row.innerHTML=`<div class="row-hr">${w.i} ${w.hr}${mark}<i>${w.r}${w.n?' · '+w.n:''}</i></div><div class="row-ko">${w.ko}</div>`;
+      const b=document.createElement('button');b.className='spk';b.textContent='▶';
+      b.setAttribute('aria-label',w.hr+' 발음 듣기');b.onclick=()=>speak(w.ex||w.hr);
+      row.appendChild(b);wrap.appendChild(row);
+    });
+    el.appendChild(wrap);
+  });
+}
+
+const dotsEl=document.getElementById('dots'),stageName=document.getElementById('stage-name'),
+      stTop=document.getElementById('st-top'),stBody=document.getElementById('st-body'),
+      wBtns=document.getElementById('w-btns'),wStat=document.getElementById('w-status');
+for(let i=0;i<5;i++){const d=document.createElement('div');d.className='dot';dotsEl.appendChild(d);}
+
+function pickWord(){
+  const pool=activeWords(), now=Date.now();
+  const due=pool.filter(w=>srs[w.hr].box>0&&srs[w.hr].due<=now);
+  if(due.length){cur=due[Math.floor(Math.random()*due.length)];}
+  else{
+    const learning=pool.filter(w=>srs[w.hr].box>0&&srs[w.hr].box<5);
+    const fresh=pool.filter(w=>srs[w.hr].box===0);
+    if(learning.length<LIMIT&&fresh.length)cur=fresh[0];
+    else if(learning.length)cur=learning.sort((a,b)=>srs[a.hr].due-srs[b.hr].due)[0];
+    else cur=pool.slice().sort((a,b)=>srs[a.hr].due-srs[b.hr].due)[0];
+  }
+  wAnswered=false;
+  renderWord();
+}
+function renderWord(){
+  if(!cur){stTop.innerHTML='<div class="st-ask">이 분류에 단어가 없습니다.</div>';return;}
+  const box=srs[cur.hr].box;
+  [...dotsEl.children].forEach((d,i)=>{d.className='dot'+(i<Math.min(box,5)?' f':'')+(box>=5?' done':'');});
+  stageName.textContent=STAGES[Math.min(box,5)];
+  stageName.className='stage-name'+(box>=5?' done':'');
+  stBody.innerHTML=''; wBtns.innerHTML='';
+  if(box===0)stageIntro();
+  else if(box===1)stageChoice(true);
+  else if(box===2)stageChoice(false);
+  else if(box===3)stageType(true);
+  else stageType(false);
+  const pool=activeWords();
+  const m=pool.filter(w=>srs[w.hr].box>=5).length;
+  wStat.textContent=`${wCat} · 외움 ${m}/${pool.length} · 학습 중 ${pool.filter(w=>srs[w.hr].box>0&&srs[w.hr].box<5).length}`;
+}
+function exBlock(){
+  return cur.ex?`<div class="st-ex"><b>${cur.ex}</b><span>${cur.exko}</span></div>`:'';
+}
+function stageIntro(){
+  stTop.innerHTML=`<div class="st-icon">${cur.i}</div>
+    <div class="st-main">${cur.hr}</div>
+    <div class="st-read">${cur.r}</div>
+    <div class="st-ko">${cur.ko}</div>
+    ${cur.n?`<div class="st-note">${cur.n}</div>`:''}`+exBlock();
+  speak(cur.hr);
+  mkBtn(wBtns,'외웠어요 · 다음 단계','primary',()=>showWordVerdict(true));
+  mkBtn(wBtns,'🔊','ghost',()=>speak(cur.ex||cur.hr));
+}
+function stageChoice(hrToKo){
+  stTop.innerHTML = hrToKo
+    ? `<div class="st-main">${cur.hr}</div><div class="st-ask">뜻을 고르세요</div>`
+    : `<div class="st-icon">${cur.i}</div><div class="st-main ko">${cur.ko}</div><div class="st-ask">크로아티아어를 고르세요</div>`;
+  if(hrToKo)speak(cur.hr);
+  const sameCat=WORDS.filter(w=>w.c===cur.c&&w.hr!==cur.hr&&w.ko!==cur.ko);
+  const others=shuffle(sameCat.length>=3?sameCat:WORDS.filter(w=>w.hr!==cur.hr)).slice(0,3);
+  const opts=shuffle([cur,...others]);
+  const box=document.createElement('div');box.className='opts';
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt'+(hrToKo?'':' hr');
+    b.textContent=hrToKo?o.ko:o.hr;
+    b.onclick=()=>{
+      if(wAnswered)return; wAnswered=true;
+      const ok=o.hr===cur.hr;
+      [...box.children].forEach((el,i)=>{el.disabled=true;
+        if(opts[i].hr===cur.hr)el.classList.add('right');
+        else if(opts[i]===o)el.classList.add('wrong');});
+      showWordVerdict(ok);
+    };
+    box.appendChild(b);
+  });
+  stBody.appendChild(box);
+}
+function maskHint(s){
+  return s.split('').map((ch,i)=>{
+    if(ch===' ')return '␣';
+    return (i===0||i===s.length-1||i%3===0)?ch:'_';
+  }).join(' ');
+}
+function stageType(hint){
+  stTop.innerHTML=`<div class="st-icon">${cur.i}</div><div class="st-main ko">${cur.ko}</div>
+    ${cur.n?`<div class="st-note">${cur.n}</div>`:''}
+    <div class="st-ask">${hint?'철자를 채워 쓰세요':'크로아티아어로 직접 쓰세요'}</div>
+    ${hint?`<div class="st-hint">${maskHint(cur.hr)}</div>`:''}`;
+  stBody.innerHTML=`<input class="tinput" id="win" placeholder="여기에 입력" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="dia" id="wdia"></div><div class="verdict" id="wver"></div>`;
+  const tin=document.getElementById('win'),dia=document.getElementById('wdia');
+  ['č','ć','š','ž','đ'].forEach(ch=>{
+    const b=document.createElement('button');b.textContent=ch;b.type='button';
+    b.onclick=()=>{const s=tin.selectionStart;tin.value=tin.value.slice(0,s)+ch+tin.value.slice(tin.selectionEnd);
+      tin.focus();tin.setSelectionRange(s+1,s+1);};
+    dia.appendChild(b);
+  });
+  tin.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();wAnswered?pickWord():checkWord();}});
+  mkBtn(wBtns,'확인','primary',checkWord);
+  mkBtn(wBtns,'모르겠음','ghost',()=>{if(!wAnswered){wAnswered=true;showWordVerdict(false);}});
+}
+function checkWord(){
+  if(wAnswered)return;
+  const tin=document.getElementById('win');
+  if(!tin||!tin.value.trim())return;
+  wAnswered=true;
+  showWordVerdict(norm(tin.value)===norm(cur.hr));
+}
+async function showWordVerdict(ok){
+  const s=srs[cur.hr];
+  if(ok)s.box=Math.min(5,s.box+1);
+  else s.box=Math.max(0,s.box-1);
+  s.due=Date.now()+INT[s.box]+(s.box===5?16*864e5:0);
+  await save(); renderBoard();
+  let v=document.getElementById('wver');
+  if(!v){v=document.createElement('div');v.id='wver';stBody.appendChild(v);}
+  v.className='verdict show '+(ok?'ok':'no');
+  v.innerHTML=`${ok?'맞았습니다':'아직 아닙니다'}
+    <div class="verdict-hr">${cur.hr}</div>
+    <div class="verdict-r">${cur.r} · ${cur.ko}${cur.n?' · '+cur.n:''}</div>
+    ${cur.ex?`<div class="verdict-r" style="color:var(--stone-dim);margin-top:6px">${cur.ex} — ${cur.exko}</div>`:''}`;
+  speak(cur.hr);
+  wBtns.innerHTML='';
+  mkBtn(wBtns,'다음','primary',pickWord);
+  mkBtn(wBtns,'🔊','ghost',()=>speak(cur.ex||cur.hr));
+}
+
+/* ══════════ 회화 ══════════ */
+let pMode='build',pGroup='전체',pCur=null,picked=[],pAnswered=false;
+const pf=document.getElementById('p-filter');
+PGROUPS.forEach(g=>{
+  const b=document.createElement('button');
+  b.className='chipf';b.textContent=g;b.setAttribute('aria-pressed',String(g==='전체'));
+  b.onclick=()=>{pGroup=g;[...pf.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    pMode==='list'?renderList():nextPhrase();};
+  pf.appendChild(b);
+});
+document.querySelectorAll('#p-switch .sw').forEach(sw=>{
+  sw.onclick=()=>{
+    pMode=sw.dataset.m;
+    document.querySelectorAll('#p-switch .sw').forEach(x=>x.setAttribute('aria-pressed',String(x===sw)));
+    const list=pMode==='list';
+    document.getElementById('p-list').hidden=!list;
+    document.getElementById('p-train').hidden=list;
+    list?renderList():nextPhrase();
+  };
+});
+function activePhrases(){return pGroup==='전체'?ALLP:ALLP.filter(p=>p.g===pGroup);}
+const pLbl=document.getElementById('p-lbl'),pKo=document.getElementById('p-ko'),pCtx=document.getElementById('p-ctx'),
+      pBody=document.getElementById('p-body'),pVer=document.getElementById('p-verdict'),
+      pBtns=document.getElementById('p-btns'),pStat=document.getElementById('p-status');
+function tokens(s){return s.replace(/\s+/g,' ').trim().split(' ');}
+function nextPhrase(){
+  const pool=activePhrases();
+  const undone=pool.filter(p=>psrs[p.hr].n<2);
+  const src=undone.length?undone:pool;
+  pCur=src[Math.floor(Math.random()*src.length)];
+  picked=[];pAnswered=false;
+  pVer.className='verdict';pVer.innerHTML='';
+  pKo.textContent=pCur.ko;
+  pCtx.textContent=pCur.ctx?'힌트 · '+pCur.ctx:'';
+  pLbl.textContent=pMode==='build'?'조각을 순서대로 눌러 문장을 만드세요':'한국어를 크로아티아어로 쓰세요';
+  pMode==='build'?renderBuild():renderWrite();
+  renderPBtns();
+  const done=pool.filter(p=>psrs[p.hr].n>=2).length;
+  pStat.textContent=`${pGroup} · 완료 ${done}/${pool.length} · 이 문장 ${psrs[pCur.hr].n}/2`;
+}
+function renderBuild(){
+  const toks=tokens(pCur.hr);
+  pBody.innerHTML=`<div class="slot" id="slot"></div><div class="pool" id="pool"></div>`;
+  const slot=document.getElementById('slot'),pool=document.getElementById('pool');
+  shuffle(toks.map((t,i)=>({t,i}))).forEach(o=>{
+    const b=document.createElement('button');
+    b.className='chip';b.textContent=o.t;
+    b.onclick=()=>{if(pAnswered)return;b.classList.add('used');picked.push(o);
+      const s=document.createElement('button');s.className='chip';s.textContent=o.t;
+      s.onclick=()=>{if(pAnswered)return;b.classList.remove('used');picked=picked.filter(x=>x!==o);s.remove();};
+      slot.appendChild(s);};
+    pool.appendChild(b);
+  });
+}
+function renderWrite(){
+  pBody.innerHTML=`<input class="tinput" id="tin" style="margin-top:16px" placeholder="여기에 입력" autocomplete="off" autocapitalize="off" spellcheck="false"><div class="dia" id="dia"></div>`;
+  const dia=document.getElementById('dia'),tin=document.getElementById('tin');
+  ['č','ć','š','ž','đ'].forEach(ch=>{
+    const b=document.createElement('button');b.textContent=ch;b.type='button';
+    b.onclick=()=>{const s=tin.selectionStart;tin.value=tin.value.slice(0,s)+ch+tin.value.slice(tin.selectionEnd);
+      tin.focus();tin.setSelectionRange(s+1,s+1);};
+    dia.appendChild(b);
+  });
+  tin.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();pAnswered?nextPhrase():checkPhrase();}});
+}
+function renderPBtns(){
+  pBtns.innerHTML='';
+  if(pAnswered){mkBtn(pBtns,'다음 문장','primary',nextPhrase);mkBtn(pBtns,'🔊','ghost',()=>speak(pCur.hr));}
+  else{mkBtn(pBtns,'확인','primary',checkPhrase);mkBtn(pBtns,'모르겠음','ghost',()=>{if(!pAnswered)finishPhrase(false,false,'');});}
+}
+async function checkPhrase(){
+  if(pAnswered)return;
+  let ok=false,near=false,txt='';
+  if(pMode==='build'){
+    txt=picked.map(p=>p.t).join(' ');
+    if(!txt)return;
+    ok=norm(txt)===norm(pCur.hr);
+    document.getElementById('slot').classList.add(ok?'ok':'no');
+  }else{
+    const tin=document.getElementById('tin');
+    txt=tin.value.trim(); if(!txt)return;
+    ok=norm(txt)===norm(pCur.hr);
+    near=ok&&txt.replace(/[.,!?]/g,'').toLowerCase()!==pCur.hr.replace(/[.,!?]/g,'').toLowerCase();
+  }
+  finishPhrase(ok,near,txt);
+}
+async function finishPhrase(ok,near,txt){
+  pAnswered=true;
+  const s=psrs[pCur.hr];
+  s.n=ok?Math.min(2,s.n+1):0;
+  await save();renderBoard();
+  let diff=pCur.hr;
+  if(!ok&&txt){
+    const ut=tokens(norm(txt)),ct=tokens(pCur.hr);
+    diff=ct.map((w,i)=>norm(w)===ut[i]?w:`<span class="w">${w}</span>`).join(' ');
+  }
+  pVer.className='verdict show '+(ok?(near?'near':'ok'):'no');
+  pVer.innerHTML=`${ok?(near?'맞습니다 — 부호 표기만 다릅니다':'정확합니다'):'아직 아닙니다'}
+    <div class="verdict-hr">${diff}</div><div class="verdict-r">${pCur.r}</div>`;
+  renderPBtns(); speak(pCur.hr);
+}
+function renderList(){
+  const el=document.getElementById('p-list');el.innerHTML='';
+  const gs=pGroup==='전체'?PGROUPS.slice(1):[pGroup];
+  gs.forEach(g=>{
+    const wrap=document.createElement('div');wrap.className='group';
+    wrap.innerHTML=`<div class="group-h">${g}</div>`;
+    ALLP.filter(p=>p.g===g).forEach(p=>{
+      const row=document.createElement('div');row.className='row';
+      row.innerHTML=`<div class="row-hr">${p.hr}${psrs[p.hr].n>=2?' ✓':''}<i>${p.r}</i></div><div class="row-ko">${p.ko}</div>`;
+      const b=document.createElement('button');b.className='spk';b.textContent='▶';
+      b.setAttribute('aria-label',p.hr+' 발음 듣기');b.onclick=()=>speak(p.hr);
+      row.appendChild(b);wrap.appendChild(row);
+    });
+    el.appendChild(wrap);
+  });
+}
+
+/* ══════════ 문법 표 ══════════ */
+function fillTable(id,rows,hrCols){
+  const tb=document.getElementById(id);
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    r.forEach((cell,i)=>{const td=document.createElement('td');td.textContent=cell;
+      if(hrCols.includes(i))td.className='hr';
+      if(i===1&&id==='case-table')td.className='q';
+      tr.appendChild(td);});
+    tb.appendChild(tr);
+  });
+}
+fillTable('case-table',CASES,[2,3,4]);
+fillTable('biti-table',BITI,[1,2,3,4]);
+fillTable('verb-table',VERBS,[1,2,3]);
+fillTable('past-table',PAST,[0,1,2]);
+
+/* ══════════ 퀴즈 ══════════ */
+let qCat='전체', qc=0, qt=0, qs=0;
+const qf=document.getElementById('q-filter');
+CATS.forEach(c=>{
+  const b=document.createElement('button');
+  b.className='chipf';b.textContent=c;b.setAttribute('aria-pressed',String(c==='전체'));
+  b.onclick=()=>{qCat=c;[...qf.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));newQuestion();};
+  qf.appendChild(b);
+});
+function quizPool(){const p=qCat==='전체'?WORDS:WORDS.filter(w=>w.c===qCat);return p.length>=4?p:WORDS;}
+const qP=document.getElementById('q-prompt'),qH=document.getElementById('q-hint'),
+      qO=document.getElementById('q-opts'),qN=document.getElementById('q-next');
+function newQuestion(){
+  const pool=quizPool();
+  const hrToKo=Math.random()<.55;
+  const target=pool[Math.floor(Math.random()*pool.length)];
+  const others=shuffle(WORDS.filter(w=>w.hr!==target.hr&&w.ko!==target.ko)).slice(0,3);
+  const opts=shuffle([target,...others]);
+  qP.textContent=hrToKo?target.hr:target.ko;
+  qH.textContent=hrToKo?'뜻을 고르세요':'크로아티아어를 고르세요';
+  qO.innerHTML='';
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt'+(hrToKo?'':' hr');
+    b.textContent=hrToKo?o.ko:o.hr;
+    b.onclick=()=>{
+      const right=o.hr===target.hr;
+      qt++; if(right){qc++;qs++;}else qs=0;
+      [...qO.children].forEach((el,i)=>{el.disabled=true;
+        if(opts[i].hr===target.hr)el.classList.add('right');
+        else if(opts[i]===o)el.classList.add('wrong');});
+      qH.textContent=`${target.hr} · ${target.r} · ${target.ko}`;
+      speak(target.hr);
+      document.getElementById('q-correct').textContent=qc;
+      document.getElementById('q-total').textContent=qt;
+      document.getElementById('q-streak').textContent=qs;
+      qN.textContent='다음 문제';
+    };
+    qO.appendChild(b);
+  });
+  qN.textContent='건너뛰기';
+}
+qN.onclick=newQuestion;
+
+/* ══════════ 탭 ══════════ */
+const tabs=[...document.querySelectorAll('.tab')];
+tabs.forEach(t=>{
+  t.onclick=()=>{
+    tabs.forEach(x=>x.setAttribute('aria-selected',String(x===t)));
+    ['abc','words','phrases','grammar','quiz'].forEach(id=>{document.getElementById(id).hidden=(id!==t.dataset.t);});
+    if(t.dataset.t==='words'&&!cur)pickWord();
+    if(t.dataset.t==='phrases'&&!pCur)nextPhrase();
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+document.getElementById('reset').onclick=async()=>{
+  if(!confirm('모든 학습 진도를 지웁니다. 계속할까요?'))return;
+  srs={};psrs={};
+  WORDS.forEach(w=>srs[w.hr]={box:0,due:0});
+  ALLP.forEach(p=>psrs[p.hr]={n:0});
+  await save();renderBoard();pickWord();nextPhrase();
+};
+(async()=>{await load();renderBoard();pickWord();nextPhrase();})();
+</script>
+<button onclick="setupSync()" title="동기화 설정" style="position:fixed;right:12px;bottom:12px;z-index:50;border:1px solid var(--line);background:var(--ink);color:var(--foam);border-radius:50%;width:44px;height:44px;font-size:20px">⟳</button>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js")</script>
+</body>
+</html>
