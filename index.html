@@ -803,11 +803,11 @@ ALPHABET.forEach(([l,k,t,s])=>{
 /* ══════════ 공통 ══════════ */
 const DEACC={'č':'c','ć':'c','š':'s','ž':'z','đ':'d'};
 function norm(s){return s.toLowerCase().split('').map(c=>DEACC[c]||c).join('').replace(/[.,!?;:…"']/g,'').replace(/\s+/g,' ').trim();}
-function shuffle(a){return a.slice().sort(()=>Math.random()-.5);}
+function shuffle(a){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
 function mkBtn(row,l,c,f){const b=document.createElement('button');b.className='btn '+c;b.innerHTML=l;b.onclick=f;row.appendChild(b);return b;}
 
 /* ══════════ 단어 암기 ══════════ */
-let wCat='전체', wMode='learn', cur=null, wAnswered=false;
+let wCat='전체', wMode='learn', cur=null, wAnswered=false, lastHr=null;
 const wf=document.getElementById('w-filter');
 CATS.forEach(c=>{
   const b=document.createElement('button');
@@ -851,35 +851,58 @@ const dotsEl=document.getElementById('dots'),stageName=document.getElementById('
       wBtns=document.getElementById('w-btns'),wStat=document.getElementById('w-status');
 for(let i=0;i<5;i++){const d=document.createElement('div');d.className='dot';dotsEl.appendChild(d);}
 
-function pickWord(){
+/* 출제 순서
+   1) 복습 시각이 지난 단어: 가장 오래 기다린 것부터 (방금 본 단어는 다른 후보가 있으면 뒤로)
+   2) 단기 단계(1~3단계, 30초~10분 간격) 단어가 LIMIT개 미만이면 새 단어를 목록 순서대로
+   3) 그 외에는 단기 단계 단어 중 복습 시각이 가장 가까운 것
+   4) 4단계(1일)·외운 단어는 예정보다 일찍 꺼내지 않음 → 할 게 없으면 대기 화면 */
+function avoidLast(list){return list.length>1&&list[0].hr===lastHr?list[1]:list[0];}
+function byDue(a,b){return srs[a.hr].due-srs[b.hr].due;}
+function pickWord(early){
   const pool=activeWords(), now=Date.now();
-  const due=pool.filter(w=>srs[w.hr].box>0&&srs[w.hr].due<=now);
-  if(due.length){cur=due[Math.floor(Math.random()*due.length)];}
-  else{
-    const learning=pool.filter(w=>srs[w.hr].box>0&&srs[w.hr].box<5);
-    const fresh=pool.filter(w=>srs[w.hr].box===0);
-    if(learning.length<LIMIT&&fresh.length)cur=fresh[0];
-    else if(learning.length)cur=learning.sort((a,b)=>srs[a.hr].due-srs[b.hr].due)[0];
-    else cur=pool.slice().sort((a,b)=>srs[a.hr].due-srs[b.hr].due)[0];
-  }
+  const due=pool.filter(w=>srs[w.hr].box>0&&srs[w.hr].due<=now).sort(byDue);
+  const short=pool.filter(w=>srs[w.hr].box>0&&srs[w.hr].box<4).sort(byDue);
+  const fresh=pool.filter(w=>srs[w.hr].box===0);
+  if(due.length)cur=avoidLast(due);
+  else if(fresh.length&&short.length<LIMIT)cur=avoidLast(fresh);
+  else if(short.length)cur=avoidLast(short);
+  else if(fresh.length)cur=avoidLast(fresh);
+  else if(early===true&&pool.length)cur=avoidLast(pool.slice().sort(byDue));
+  else cur=null;
   wAnswered=false;
   renderWord();
 }
+function fmtWait(ms){
+  const m=Math.ceil(ms/60e3);
+  if(m<60)return m+'분';
+  const h=Math.round(m/60);
+  return h<48?h+'시간':Math.round(h/24)+'일';
+}
 function renderWord(){
-  if(!cur){stTop.innerHTML='<div class="st-ask">이 분류에 단어가 없습니다.</div>';return;}
+  const pool=activeWords();
+  const m=pool.filter(w=>srs[w.hr].box>=5).length;
+  wStat.textContent=`${wCat} · 외움 ${m}/${pool.length} · 학습 중 ${pool.filter(w=>srs[w.hr].box>0&&srs[w.hr].box<5).length}`;
+  stBody.innerHTML=''; wBtns.innerHTML='';
+  if(!cur){
+    [...dotsEl.children].forEach(d=>d.className='dot');
+    stageName.textContent='—';stageName.className='stage-name';
+    if(!pool.length){stTop.innerHTML='<div class="st-ask">이 분류에 단어가 없습니다.</div>';return;}
+    const next=Math.min(...pool.map(w=>srs[w.hr].due));
+    stTop.innerHTML=`<div class="st-icon">☕</div><div class="st-main ko">지금 복습할 단어가 없습니다</div>
+      <div class="st-ask">다음 복습은 약 ${fmtWait(next-Date.now())} 뒤입니다.</div>`;
+    mkBtn(wBtns,'미리 복습하기','ghost',()=>pickWord(true));
+    return;
+  }
+  lastHr=cur.hr;
   const box=srs[cur.hr].box;
   [...dotsEl.children].forEach((d,i)=>{d.className='dot'+(i<Math.min(box,5)?' f':'')+(box>=5?' done':'');});
   stageName.textContent=STAGES[Math.min(box,5)];
   stageName.className='stage-name'+(box>=5?' done':'');
-  stBody.innerHTML=''; wBtns.innerHTML='';
   if(box===0)stageIntro();
   else if(box===1)stageChoice(true);
   else if(box===2)stageChoice(false);
   else if(box===3)stageType(true);
   else stageType(false);
-  const pool=activeWords();
-  const m=pool.filter(w=>srs[w.hr].box>=5).length;
-  wStat.textContent=`${wCat} · 외움 ${m}/${pool.length} · 학습 중 ${pool.filter(w=>srs[w.hr].box>0&&srs[w.hr].box<5).length}`;
 }
 function exBlock(){
   return cur.ex?`<div class="st-ex"><b>${cur.ex}</b><span>${cur.exko}</span></div>`:'';
@@ -891,7 +914,7 @@ function stageIntro(){
     <div class="st-ko">${cur.ko}</div>
     ${cur.n?`<div class="st-note">${cur.n}</div>`:''}`+exBlock();
   speak(cur.hr);
-  mkBtn(wBtns,'외웠어요 · 다음 단계','primary',()=>showWordVerdict(true));
+  mkBtn(wBtns,'외웠어요 · 다음 단계','primary',()=>{if(wAnswered)return;wAnswered=true;showWordVerdict(true);});
   mkBtn(wBtns,'🔊','ghost',()=>speak(cur.ex||cur.hr));
 }
 function stageChoice(hrToKo){
@@ -900,7 +923,7 @@ function stageChoice(hrToKo){
     : `<div class="st-icon">${cur.i}</div><div class="st-main ko">${cur.ko}</div><div class="st-ask">크로아티아어를 고르세요</div>`;
   if(hrToKo)speak(cur.hr);
   const sameCat=WORDS.filter(w=>w.c===cur.c&&w.hr!==cur.hr&&w.ko!==cur.ko);
-  const others=shuffle(sameCat.length>=3?sameCat:WORDS.filter(w=>w.hr!==cur.hr)).slice(0,3);
+  const others=shuffle(sameCat.length>=3?sameCat:WORDS.filter(w=>w.hr!==cur.hr&&w.ko!==cur.ko)).slice(0,3);
   const opts=shuffle([cur,...others]);
   const box=document.createElement('div');box.className='opts';
   opts.forEach(o=>{
@@ -951,10 +974,12 @@ function checkWord(){
   showWordVerdict(norm(tin.value)===norm(cur.hr));
 }
 async function showWordVerdict(ok){
-  const s=srs[cur.hr];
-  if(ok)s.box=Math.min(5,s.box+1);
-  else s.box=Math.max(0,s.box-1);
-  s.due=Date.now()+INT[s.box]+(s.box===5?16*864e5:0);
+  const s=srs[cur.hr], now=Date.now();
+  // 4단계 이상을 예정보다 일찍(미리 복습) 맞힌 경우엔 간격을 건너뛰지 않도록 단계를 올리지 않음
+  const early=s.box>=4&&s.due>now;
+  if(ok&&!early)s.box=Math.min(5,s.box+1);
+  else if(!ok)s.box=Math.max(0,s.box-1);
+  if(!(ok&&early))s.due=now+INT[s.box]+(s.box===5?16*864e5:0);
   await save(); renderBoard();
   let v=document.getElementById('wver');
   if(!v){v=document.createElement('div');v.id='wver';stBody.appendChild(v);}
@@ -997,7 +1022,8 @@ function tokens(s){return s.replace(/\s+/g,' ').trim().split(' ');}
 function nextPhrase(){
   const pool=activePhrases();
   const undone=pool.filter(p=>psrs[p.hr].n<2);
-  const src=undone.length?undone:pool;
+  let src=undone.length?undone:pool;
+  if(src.length>1&&pCur)src=src.filter(p=>p.hr!==pCur.hr);
   pCur=src[Math.floor(Math.random()*src.length)];
   picked=[];pAnswered=false;
   pVer.className='verdict';pVer.innerHTML='';
@@ -1105,7 +1131,7 @@ fillTable('verb-table',VERBS,[1,2,3]);
 fillTable('past-table',PAST,[0,1,2]);
 
 /* ══════════ 퀴즈 ══════════ */
-let qCat='전체', qc=0, qt=0, qs=0;
+let qCat='전체', qc=0, qt=0, qs=0, qLast=null;
 const qf=document.getElementById('q-filter');
 CATS.forEach(c=>{
   const b=document.createElement('button');
@@ -1119,8 +1145,11 @@ const qP=document.getElementById('q-prompt'),qH=document.getElementById('q-hint'
 function newQuestion(){
   const pool=quizPool();
   const hrToKo=Math.random()<.55;
-  const target=pool[Math.floor(Math.random()*pool.length)];
-  const others=shuffle(WORDS.filter(w=>w.hr!==target.hr&&w.ko!==target.ko)).slice(0,3);
+  let target=pool[Math.floor(Math.random()*pool.length)];
+  if(qLast&&pool.length>1)while(target.hr===qLast)target=pool[Math.floor(Math.random()*pool.length)];
+  qLast=target.hr;
+  const cand=pool.filter(w=>w.hr!==target.hr&&w.ko!==target.ko);
+  const others=shuffle(cand.length>=3?cand:WORDS.filter(w=>w.hr!==target.hr&&w.ko!==target.ko)).slice(0,3);
   const opts=shuffle([target,...others]);
   qP.textContent=hrToKo?target.hr:target.ko;
   qH.textContent=hrToKo?'뜻을 고르세요':'크로아티아어를 고르세요';
@@ -1164,7 +1193,10 @@ document.getElementById('reset').onclick=async()=>{
   srs={};psrs={};
   WORDS.forEach(w=>srs[w.hr]={box:0,due:0});
   ALLP.forEach(p=>psrs[p.hr]={n:0});
+  lastHr=null;
   await save();renderBoard();pickWord();nextPhrase();
+  if(wMode==='list')renderWordList();
+  if(pMode==='list')renderList();
 };
 (async()=>{await load();renderBoard();pickWord();nextPhrase();})();
 </script>
