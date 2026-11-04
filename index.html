@@ -1334,8 +1334,8 @@ function renderLesson(){
 
 /* 내 자기소개 만들기 */
 const CITIES=[['','선택 안 함','',''],['Seul','서울','Seula','Seulu'],['Busan','부산','Busana','Busanu'],['Incheon','인천','Incheona','Incheonu'],
-  ['Daejeon','대전','Daejeona','Daejeonu'],['Zagreb','자그레브','Zagreba','Zagrebu'],['Split','스플리트','Splita','Splitu']];
-const LIVES=[['Seulu','서울'],['Busanu','부산'],['Incheonu','인천'],['Daejeonu','대전'],['Koreji','한국'],['Zagrebu','자그레브'],['Splitu','스플리트'],['Hrvatskoj','크로아티아']];
+  ['Daejeon','대전','Daejeona','Daejeonu'],['Daegu','대구','Daegua','Daeguu'],['Gwangju','광주','Gwangjua','Gwangjuu'],['Ulsan','울산','Ulsana','Ulsanu'],['Suwon','수원','Suwona','Suwonu'],['Jeju','제주','Jejua','Jejuu'],['Zagreb','자그레브','Zagreba','Zagrebu'],['Split','스플리트','Splita','Splitu']];
+const LIVES=[['Seulu','서울'],['Busanu','부산'],['Incheonu','인천'],['Daejeonu','대전'],['Daeguu','대구'],['Gwangjuu','광주'],['Ulsanu','울산'],['Suwonu','수원'],['Jejuu','제주'],['Koreji','한국'],['Zagrebu','자그레브'],['Splitu','스플리트'],['Hrvatskoj','크로아티아']];
 const JOBS=[['student','studentica','학생'],['programer','programerka','프로그래머'],['inženjer','inženjerka','엔지니어'],['dizajner','dizajnerica','디자이너'],
   ['učitelj','učiteljica','교사'],['liječnik','liječnica','의사'],['kuhar','kuharica','요리사'],['službenik','službenica','회사원'],['umirovljenik','umirovljenica','은퇴자']];
 const LANGS=[['korejski','한국어'],['korejski i engleski','한국어와 영어'],['korejski, engleski i japanski','한국어, 영어, 일본어']];
@@ -1357,27 +1357,45 @@ function ageHr(n){
 let me={name:'',sex:'m',city:'Seul',age:'',live:'Seulu',job:1,lang:1,hob:['putovati'],why:1};
 try{Object.assign(me,JSON.parse(ls.g('hr:me')||'{}'));}catch(e){}
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const hasHangul=t=>/[가-힣]/.test(t);
+function josa(w,a,b){const c=w.trim().slice(-1).charCodeAt(0);return c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28!==0?a:b;}
+const C='__c',cv=k=>(me[k]||'').trim();
+/* 여성 화자: 과거형 -o sam → -la sam (došao→došla, bio→bila, jeo→jela, čuo→čula) */
+function femin(t){
+  const f=w=>w.replace(/(ao|io|eo|uo)$/,m=>({ao:'la',io:'ila',eo:'ela',uo:'ula'}[m]));
+  return t.replace(/(\p{L}+(?:ao|io|eo|uo))(?= sam\b)/gu,f).replace(/(?<=\bsam )(\p{L}+(?:ao|io|eo|uo))\b/gu,f);
+}
 function introLines(){
   const L=[],name=me.name.trim()||'Minsu';
-  L.push(['Dobar dan!','안녕하세요!']);
-  L.push([`Zovem se ${name}.`,`제 이름은 ${name}입니다.`]);
-  const c=CITIES.find(x=>x[0]===me.city);
-  L.push(c&&c[0]?[`Iz Koreje sam, iz ${c[2]}.`,`한국 ${c[1]}에서 왔습니다.`]:['Iz Koreje sam.','한국에서 왔습니다.']);
+  L.push({hr:'Dobar dan!',ko:'안녕하세요!'});
+  L.push(hasHangul(name)?{mt:`제 이름은 ${name}입니다.`}:{hr:`Zovem se ${name}.`,ko:`제 이름은 ${name}입니다.`});
+  if(me.city===C){if(cv('cityC'))L.push({mt:`${cv('cityC')}에서 왔습니다.`});}
+  else{const c=CITIES.find(x=>x[0]===me.city);
+    L.push(c&&c[0]?{hr:`Iz Koreje sam, iz ${c[2]}.`,ko:`한국 ${c[1]}에서 왔습니다.`}:{hr:'Iz Koreje sam.',ko:'한국에서 왔습니다.'});}
   const a=parseInt(me.age,10);
-  if(a>=1&&a<=99)L.push([`Imam ${ageHr(a)}.`,`${a}살입니다.`]);
-  const lv=LIVES.find(x=>x[0]===me.live);if(lv)L.push([`Živim u ${lv[0]}.`,`${lv[1]}에 삽니다.`]);
-  const j=JOBS[me.job];if(j)L.push([`${cap(me.sex==='f'?j[1]:j[0])} sam.`,`저는 ${j[2]}입니다.`]);
-  const lg=LANGS[me.lang];if(lg)L.push([`Govorim ${lg[0]}.`,`${lg[1]}를 합니다.`]);
-  L.push(['Učim hrvatski, ali govorim samo malo.','크로아티아어를 배우고 있는데 아직 조금밖에 못 해요.']);
+  if(a>=1&&a<=99)L.push({hr:`Imam ${ageHr(a)}.`,ko:`${a}살입니다.`});
+  if(me.live===C){if(cv('liveC'))L.push({mt:`저는 ${cv('liveC')}에 삽니다.`});}
+  else{const lv=LIVES.find(x=>x[0]===me.live);if(lv)L.push({hr:`Živim u ${lv[0]}.`,ko:`${lv[1]}에 삽니다.`});}
+  if(me.job===C){if(cv('jobC'))L.push({mt:`저는 ${cv('jobC')}입니다.`});}
+  else{const j=JOBS[me.job];if(j)L.push({hr:`${cap(me.sex==='f'?j[1]:j[0])} sam.`,ko:`저는 ${j[2]}입니다.`});}
+  if(me.lang===C){if(cv('langC'))L.push({mt:`저는 ${cv('langC')}${josa(cv('langC'),'을','를')} 합니다.`});}
+  else{const lg=LANGS[me.lang];if(lg)L.push({hr:`Govorim ${lg[0]}.`,ko:`${lg[1]}를 합니다.`});}
+  L.push({hr:'Učim hrvatski, ali govorim samo malo.',ko:'크로아티아어를 배우고 있는데 아직 조금밖에 못 해요.'});
   const hs=HOBBIES.filter(h=>me.hob.includes(h[0]));
-  if(hs.length){const hr=hs.map(h=>h[0]),ko=hs.map(h=>h[1]);
+  if(cv('hobC')){const ko=[...hs.map(h=>h[1]),cv('hobC')].join(', ');L.push({mt:`저는 ${ko}${josa(ko,'을','를')} 좋아합니다.`});}
+  else if(hs.length){const hr=hs.map(h=>h[0]),ko=hs.map(h=>h[1]);
     const joined=hr.length>1?hr.slice(0,-1).join(', ')+' i '+hr[hr.length-1]:hr[0];
-    L.push([`Volim ${joined}.`,`${ko.join(', ')}를 좋아합니다.`]);}
-  const w=WHY[me.why];if(w&&w[0])L.push([w[0],w[2]]);
-  L.push(['Drago mi je!','만나서 반갑습니다!']);
-  return L;
+    L.push({hr:`Volim ${joined}.`,ko:`${ko.join(', ')}를 좋아합니다.`});}
+  if(me.why===C){if(cv('whyC'))L.push({mt:`${cv('whyC')} 크로아티아에 왔습니다.`});}
+  else{const w=WHY[me.why];if(w&&w[0])L.push({hr:w[0],ko:w[2]});}
+  L.push({hr:'Drago mi je!',ko:'만나서 반갑습니다!'});
+  return L.map(l=>{if(!l.mt)return l;
+    const t=trCache.get(l.mt);return {ko:l.mt,mt:l.mt,hr:t?(me.sex==='f'?femin(t):t):''};});
 }
-function opts(list,sel,val,lbl){return list.map((x,i)=>`<option value="${esc(val(x,i))}"${String(val(x,i))===String(sel)?' selected':''}>${esc(lbl(x))}</option>`).join('');}
+const introReady=()=>introLines().filter(l=>l.hr).map(l=>l.hr);
+function opts(list,sel,val,lbl){return list.map((x,i)=>`<option value="${esc(val(x,i))}"${String(val(x,i))===String(sel)?' selected':''}>${esc(lbl(x))}</option>`).join('')+
+  `<option value="${C}"${sel===C?' selected':''}>✏️ 직접 입력</option>`;}
+function cin(k,ph){return `<input id="me-${k}" maxlength="40" placeholder="${ph}" value="${esc(me[k]||'')}">`;}
 function renderBuilder(el){
   const c=document.createElement('div');c.className='lesson';
   c.innerHTML=`<div class="lesson-n">직접 해 보기</div><div class="lesson-t">내 자기소개 만들기</div>
@@ -1396,16 +1414,17 @@ function renderBuilder(el){
   <div id="me-pick">
   <div class="lesson-p">내 정보를 고르면 문법(격 변화, 나이 표현, 성별 어미)을 맞춘 자기소개가 만들어집니다. 소리 내어 따라 읽고 외워 두세요.</div>
   <div class="form">
-   <label class="field">이름 (로마자)<input id="me-name" maxlength="30" placeholder="Minsu" value="${esc(me.name)}"></label>
+   <label class="field">이름 (한글·로마자)<input id="me-name" maxlength="30" placeholder="Minsu 또는 민수" value="${esc(me.name)}"></label>
    <label class="field">성별 (어미가 달라짐)<select id="me-sex"><option value="m"${me.sex==='m'?' selected':''}>남성</option><option value="f"${me.sex==='f'?' selected':''}>여성</option></select></label>
    <label class="field">나이<input id="me-age" type="number" min="1" max="99" inputmode="numeric" placeholder="예: 30" value="${esc(me.age)}"></label>
-   <label class="field">고향 (한국)<select id="me-city">${opts(CITIES,me.city,x=>x[0],x=>x[1])}</select></label>
-   <label class="field">사는 곳<select id="me-live">${opts(LIVES,me.live,x=>x[0],x=>x[1])}</select></label>
-   <label class="field">직업<select id="me-job">${opts(JOBS,me.job,(x,i)=>i,x=>x[2])}</select></label>
-   <label class="field">할 줄 아는 언어<select id="me-lang">${opts(LANGS,me.lang,(x,i)=>i,x=>x[1])}</select></label>
-   <label class="field">온 이유<select id="me-why">${opts(WHY,me.why,(x,i)=>i,x=>x[1])}</select></label>
+   <label class="field">고향<select id="me-city">${opts(CITIES,me.city,x=>x[0],x=>x[1])}</select>${cin('cityC','예: 울산')}</label>
+   <label class="field">사는 곳<select id="me-live">${opts(LIVES,me.live,x=>x[0],x=>x[1])}</select>${cin('liveC','예: 울산')}</label>
+   <label class="field">직업<select id="me-job">${opts(JOBS,me.job,(x,i)=>i,x=>x[2])}</select>${cin('jobC','예: 간호사')}</label>
+   <label class="field">할 줄 아는 언어<select id="me-lang">${opts(LANGS,me.lang,(x,i)=>i,x=>x[1])}</select>${cin('langC','예: 한국어와 중국어')}</label>
+   <label class="field">온 이유<select id="me-why">${opts(WHY,me.why,(x,i)=>i,x=>x[1])}</select>${cin('whyC','예: 친구를 만나러')}</label>
   </div>
-  <div class="field" style="margin-top:10px">취미 (여러 개 선택 가능)<div class="chips" id="me-hob"></div></div>
+  <div class="field" style="margin-top:10px">취미 (여러 개 선택 가능)<div class="chips" id="me-hob"></div><input id="me-hobC" maxlength="60" placeholder="✏️ 다른 취미 직접 입력 (예: 낚시, 축구)" value="${esc(me.hobC||'')}" style="margin-top:6px"></div>
+  <div class="tip" id="me-ptip"></div>
   <div class="intro-out" id="me-out"></div>
   <div class="btnrow" id="me-btns"></div>
   </div>`;
@@ -1420,14 +1439,34 @@ function renderBuilder(el){
   function upd(){
     me.name=c.querySelector('#me-name').value.replace(/[<>]/g,'');me.sex=c.querySelector('#me-sex').value;
     me.age=c.querySelector('#me-age').value;me.city=c.querySelector('#me-city').value;me.live=c.querySelector('#me-live').value;
-    me.job=+c.querySelector('#me-job').value;me.lang=+c.querySelector('#me-lang').value;me.why=+c.querySelector('#me-why').value;
+    const nv=k=>{const v=c.querySelector('#me-'+k).value;return v===C?C:+v;};
+    me.job=nv('job');me.lang=nv('lang');me.why=nv('why');
+    ['cityC','liveC','jobC','langC','whyC','hobC'].forEach(k=>me[k]=c.querySelector('#me-'+k).value.replace(/[<>]/g,''));
+    [['city','cityC'],['live','liveC'],['job','jobC'],['lang','langC'],['why','whyC']].forEach(([s,k])=>{
+      c.querySelector('#me-'+k).hidden=me[s]!==C;});
     ls.s('hr:me',JSON.stringify(me));
-    out.innerHTML='';introLines().forEach(l=>out.appendChild(exRow(l[0],'',l[1])));
+    paint();
+    clearTimeout(pt);pt=setTimeout(resolveMt,500);
+  }
+  let pt=0,pseq=0;
+  const ptip=c.querySelector('#me-ptip');
+  function paint(){
+    const ls_=introLines();out.innerHTML='';
+    ls_.forEach(l=>out.appendChild(l.hr?exRow(l.hr,'',l.ko):exRow('…',' 번역 중',l.ko)));
+    ptip.textContent=ls_.some(l=>l.mt)?'✏️ 직접 입력한 항목은 기계 번역입니다.'+(me.sex==='f'?' 직업명 등 일부는 남성형으로 나올 수 있으니 확인하세요.':''):'';
+  }
+  async function resolveMt(){
+    const my=++pseq,need=introLines().filter(l=>l.mt&&!l.hr);
+    if(!need.length)return;
+    const r=await Promise.all(need.map(l=>translateKo(l.mt)));
+    if(my!==pseq)return;
+    if(r.some(x=>!x))ptip.textContent='번역 서버에 연결하지 못했습니다. 인터넷 연결을 확인해 주세요.';
+    else paint();
   }
   c.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',upd));
   const btns=c.querySelector('#me-btns');
-  mkBtn(btns,'🔊 전체 듣기','primary',()=>speak(introLines().map(l=>l[0]).join(' ')));
-  mkBtn(btns,'복사','',async e=>{const t=introLines().map(l=>l[0]).join(' ');
+  mkBtn(btns,'🔊 전체 듣기','primary',()=>speak(introReady().join(' ')));
+  mkBtn(btns,'복사','',async e=>{const t=introReady().join(' ');
     try{await navigator.clipboard.writeText(t);e.target.textContent='복사됨 ✓';}catch(_){prompt('아래 문장을 복사하세요',t);}});
   upd();
   /* 모드 전환 */
