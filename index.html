@@ -186,6 +186,7 @@ tr:last-child td{border-bottom:none}
 .field select option{background:var(--ink)}
 .field input:focus,.field select:focus{outline:none;border-color:var(--foam)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.ta{font-family:var(--body);font-weight:400;font-size:15px;line-height:1.5;resize:vertical;margin-top:10px}
 .intro-out{margin-top:14px;padding:4px 14px;border-radius:11px;background:rgba(0,0,0,.2)}
 @media (max-width:520px){.row{flex-wrap:wrap}.row-ko{text-align:left;flex:1 1 100%}.sah{width:100px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -809,11 +810,12 @@ let srs={}, psrs={};
 
 async function load(){
   const raw=await store.get(KEY);
-  if(raw){try{const o=JSON.parse(raw);srs=o.w||{};psrs=o.p||{};}catch(e){}}
+  if(raw){try{const o=JSON.parse(raw);srs=o.w||{};psrs=o.p||{};MINE=Array.isArray(o.m)?o.m:[];}catch(e){}}
+  mineAdd(MINE);
   WORDS.forEach(w=>{if(!srs[w.hr])srs[w.hr]={box:0,due:0};});
   ALLP.forEach(p=>{if(!psrs[p.hr])psrs[p.hr]={n:0};});
 }
-async function save(){await store.set(KEY,JSON.stringify({w:srs,p:psrs}));}
+async function save(){await store.set(KEY,JSON.stringify({w:srs,p:psrs,m:MINE}));}
 
 /* ══════════ 진도판 ══════════ */
 const sahEl=document.getElementById('sah');
@@ -1060,13 +1062,35 @@ async function showWordVerdict(ok){
 /* ══════════ 회화 ══════════ */
 let pMode='learn',pGroup='전체',pCur=null,picked=[],pAnswered=false;
 const pf=document.getElementById('p-filter');
-PGROUPS.forEach(g=>{
+function addPChip(g){
   const b=document.createElement('button');
-  b.className='chipf';b.textContent=g;b.setAttribute('aria-pressed',String(g==='전체'));
+  b.className='chipf';b.textContent=g;b.setAttribute('aria-pressed',String(g===pGroup));
   b.onclick=()=>{pGroup=g;[...pf.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
     pMode==='list'?renderList():pMode==='learn'?0:nextPhrase();};
-  pf.appendChild(b);
-});
+  pf.appendChild(b);return b;
+}
+PGROUPS.forEach(addPChip);
+/* 내가 쓴 문장 (직접 쓰기에서 추가) */
+const MG='내 문장';
+let MINE=[];
+function mineAdd(list){
+  let n=0;
+  list.forEach(m=>{
+    if(!m||!m.hr||ALLP.some(p=>p.hr===m.hr))return;
+    ALLP.push({hr:m.hr,r:'',ko:m.ko||'',ctx:'내가 쓴 문장',g:MG});
+    if(!psrs[m.hr])psrs[m.hr]={n:0};n++;
+  });
+  if(ALLP.some(p=>p.g===MG)&&!PGROUPS.includes(MG)){PGROUPS.push(MG);addPChip(MG);}
+  return n;
+}
+function mineClear(){
+  for(let i=ALLP.length-1;i>=0;i--)if(ALLP[i].g===MG){delete psrs[ALLP[i].hr];ALLP.splice(i,1);}
+  MINE=[];
+  const gi=PGROUPS.indexOf(MG);if(gi>0)PGROUPS.splice(gi,1);
+  [...pf.children].forEach(x=>{if(x.textContent===MG)x.remove();});
+  if(pGroup===MG){pGroup='전체';[...pf.children].forEach(x=>x.setAttribute('aria-pressed',String(x.textContent==='전체')));}
+  if(pCur&&pCur.g===MG)pCur=null;
+}
 document.querySelectorAll('#p-switch .sw').forEach(sw=>{
   sw.onclick=()=>{
     pMode=sw.dataset.m;
@@ -1357,6 +1381,19 @@ function opts(list,sel,val,lbl){return list.map((x,i)=>`<option value="${esc(val
 function renderBuilder(el){
   const c=document.createElement('div');c.className='lesson';
   c.innerHTML=`<div class="lesson-n">직접 해 보기</div><div class="lesson-t">내 자기소개 만들기</div>
+  <div class="switch" id="me-switch" role="group" style="margin-top:10px">
+    <button class="sw" type="button" data-bm="free">직접 쓰기</button>
+    <button class="sw" type="button" data-bm="pick">골라서 만들기</button>
+  </div>
+  <div id="me-free">
+   <div class="lesson-p">하고 싶은 말을 한국어로 자유롭게 쓰면 문장마다 바로 크로아티아어로 옮겨 드립니다. 문장은 마침표나 줄바꿈으로 나뉩니다. 번역을 위해 입력한 문장이 Google 번역으로 전송됩니다.</div>
+   <textarea class="tinput ta" id="me-text" rows="5" maxlength="2000" placeholder="안녕하세요. 저는 규완이라고 합니다.&#10;서울에서 왔고 개발자로 일해요.&#10;크로아티아 바다를 정말 좋아해요."></textarea>
+   <div class="tip" id="me-ftip"></div>
+   <div class="intro-out" id="me-fout" hidden></div>
+   <div class="btnrow" id="me-fbtns"></div>
+   <div class="status" id="me-mine"></div>
+  </div>
+  <div id="me-pick">
   <div class="lesson-p">내 정보를 고르면 문법(격 변화, 나이 표현, 성별 어미)을 맞춘 자기소개가 만들어집니다. 소리 내어 따라 읽고 외워 두세요.</div>
   <div class="form">
    <label class="field">이름 (로마자)<input id="me-name" maxlength="30" placeholder="Minsu" value="${esc(me.name)}"></label>
@@ -1370,7 +1407,8 @@ function renderBuilder(el){
   </div>
   <div class="field" style="margin-top:10px">취미 (여러 개 선택 가능)<div class="chips" id="me-hob"></div></div>
   <div class="intro-out" id="me-out"></div>
-  <div class="btnrow" id="me-btns"></div>`;
+  <div class="btnrow" id="me-btns"></div>
+  </div>`;
   el.appendChild(c);
   const hob=c.querySelector('#me-hob');
   HOBBIES.forEach(h=>{const b=document.createElement('button');b.className='chipf';b.type='button';b.textContent=h[1];
@@ -1392,6 +1430,67 @@ function renderBuilder(el){
   mkBtn(btns,'복사','',async e=>{const t=introLines().map(l=>l[0]).join(' ');
     try{await navigator.clipboard.writeText(t);e.target.textContent='복사됨 ✓';}catch(_){prompt('아래 문장을 복사하세요',t);}});
   upd();
+  /* 모드 전환 */
+  const sws=[...c.querySelectorAll('#me-switch .sw')];
+  function setBm(m){me.bm=m;ls.s('hr:me',JSON.stringify(me));
+    sws.forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.bm===m)));
+    c.querySelector('#me-free').hidden=m!=='free';c.querySelector('#me-pick').hidden=m!=='pick';}
+  sws.forEach(x=>x.onclick=()=>setBm(x.dataset.bm));
+  setBm(me.bm||'free');
+  /* 직접 쓰기: 즉석 번역 */
+  const ta=c.querySelector('#me-text'),ftip=c.querySelector('#me-ftip'),fout=c.querySelector('#me-fout'),
+        fbtns=c.querySelector('#me-fbtns'),mineSt=c.querySelector('#me-mine');
+  ta.value=me.free||'';
+  let freeLines=[],seq=0,timer=0;
+  function mineStatus(){
+    mineSt.innerHTML='';
+    const n=ALLP.filter(p=>p.g===MG).length;if(!n)return;
+    mineSt.append(`연습 목록 ‘${MG}’ ${n}개 · `);
+    const go=document.createElement('button');go.className='linkbtn';go.textContent='작문 연습하기';go.onclick=()=>goPractice(MG,'write');
+    const del=document.createElement('button');del.className='linkbtn';del.textContent='비우기';
+    del.onclick=async()=>{if(!confirm(`‘${MG}’ 연습 목록을 모두 지울까요?`))return;mineClear();await save();renderBoard();mineStatus();};
+    mineSt.append(go,' · ',del);
+  }
+  function renderFree(){
+    fout.innerHTML='';fout.hidden=!freeLines.length;
+    freeLines.forEach(l=>fout.appendChild(exRow(l[0],'',l[1])));
+    fbtns.innerHTML='';
+    if(!freeLines.length)return;
+    mkBtn(fbtns,'🔊 전체 듣기','primary',()=>speak(freeLines.map(l=>l[0]).join(' ')));
+    mkBtn(fbtns,'복사','',async e=>{const t=freeLines.map(l=>l[0]).join(' ');
+      try{await navigator.clipboard.writeText(t);e.target.textContent='복사됨 ✓';}catch(_){prompt('아래 문장을 복사하세요',t);}});
+    mkBtn(fbtns,'연습 목록에 추가','',async e=>{
+      const add=freeLines.map(l=>({hr:l[0],ko:l[1]})).filter(m=>!ALLP.some(p=>p.hr===m.hr));
+      mineAdd(add);MINE.push(...add);await save();renderBoard();
+      e.target.textContent=add.length?`${add.length}개 추가됨 ✓`:'이미 추가됨';mineStatus();});
+  }
+  async function runFree(){
+    const my=++seq,ss=splitKo(ta.value);
+    me.free=ta.value;ls.s('hr:me',JSON.stringify(me));
+    if(!ss.length){freeLines=[];ftip.textContent='';renderFree();return;}
+    ftip.textContent='번역 중…';
+    const res=await Promise.all(ss.map(translateKo));
+    if(my!==seq)return;
+    freeLines=ss.map((k,i)=>[res[i],k]).filter(l=>l[0]);
+    ftip.textContent=freeLines.length<ss.length?'번역 서버에 연결하지 못한 문장이 있습니다. 인터넷 연결을 확인해 주세요.'
+      :'기계 번역이라 어색할 수 있습니다. 여성이라면 -o/-la(과거형), -an/-na(형용사) 같은 성별 어미를 위 레슨과 비교해 확인하세요.';
+    renderFree();
+  }
+  ta.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(runFree,600);});
+  runFree();mineStatus();onMineChange=mineStatus;
+}
+let onMineChange=()=>{};
+const trCache=new Map();
+function splitKo(t){return t.split(/\n+/).flatMap(l=>l.split(/(?<=[.?!。？！])\s+/)).map(x=>x.trim()).filter(Boolean).slice(0,20).map(x=>x.slice(0,300));}
+async function translateKo(ko){
+  if(trCache.has(ko))return trCache.get(ko);
+  let out='';
+  try{const r=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=hr&dt=t&q='+encodeURIComponent(ko));
+    const j=await r.json();out=(j[0]||[]).map(x=>x[0]||'').join('').trim();}catch(e){}
+  if(!out){try{const r=await fetch('https://api.mymemory.translated.net/get?langpair=ko|hr&q='+encodeURIComponent(ko));
+    const j=await r.json();if(j.responseStatus==200)out=(j.responseData&&j.responseData.translatedText||'').trim();}catch(e){}}
+  if(out){out=out.charAt(0).toUpperCase()+out.slice(1);trCache.set(ko,out);}
+  return out;
 }
 renderLesson();
 
@@ -1480,7 +1579,7 @@ document.getElementById('reset').onclick=async()=>{
   if(wMode==='list')renderWordList();
   if(pMode==='list')renderList();
 };
-(async()=>{await load();renderBoard();pickWord();nextPhrase();})();
+(async()=>{await load();renderBoard();pickWord();nextPhrase();onMineChange();})();
 </script>
 <button onclick="setupSync()" title="동기화 설정" style="position:fixed;right:12px;bottom:12px;z-index:50;border:1px solid var(--line);background:var(--ink);color:var(--foam);border-radius:50%;width:44px;height:44px;font-size:20px">⟳</button>
 <script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js")</script>
