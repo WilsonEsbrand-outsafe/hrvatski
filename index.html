@@ -48,7 +48,7 @@ nav{position:sticky;top:0;z-index:20;margin-top:22px;background:rgba(12,29,36,.9
 .tab:hover{color:var(--stone)}
 .tab[aria-selected="true"]{color:var(--stone);border-bottom-color:var(--sah)}
 .tab:focus-visible{outline:2px solid var(--foam);outline-offset:-4px}
-section[hidden]{display:none}
+section[hidden],[hidden]{display:none!important}
 section{padding-top:24px}
 h2{font-family:var(--disp);font-weight:700;font-size:24px;letter-spacing:-.02em;margin-bottom:4px}
 .h2sub{font-size:13px;color:var(--stone-dim);margin-bottom:16px}
@@ -168,6 +168,25 @@ tr:last-child td{border-bottom:none}
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .linkbtn{background:none;border:none;color:var(--stone-dim);text-decoration:underline;cursor:pointer;font-family:var(--body);font-size:12px;padding:0}
 .linkbtn:hover{color:var(--sah)}
+/* 배우기 */
+.lesson{border:1px solid var(--line);border-radius:var(--r);background:rgba(255,255,255,.04);padding:16px 18px;margin-bottom:12px}
+.lesson-n{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--foam)}
+.lesson-t{font-size:17px;font-weight:700;margin:2px 0 6px}
+.lesson-p{font-size:13.5px;color:var(--stone-dim)}
+.lesson-p b{color:var(--stone)}
+.lesson-p ol{margin:6px 0 0 18px}.lesson-p li{margin-top:4px}
+.formula{font-family:var(--mono);font-size:13px;color:var(--sand);background:rgba(0,0,0,.22);padding:8px 11px;border-radius:8px;margin:8px 0}
+.lesson .row{padding:8px 0}
+.lesson .tip{font-size:12.5px;color:var(--foam);margin-top:8px}
+.who{flex:0 0 auto;width:22px;font-family:var(--mono);font-size:12px;color:var(--sah);font-weight:500}
+.who.b{color:var(--foam)}
+.form{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--stone-dim)}
+.field input,.field select{padding:10px;border-radius:9px;border:1px solid var(--line);background:rgba(0,0,0,.22);color:var(--stone);font-family:var(--body);font-size:14px;width:100%}
+.field select option{background:var(--ink)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--foam)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.intro-out{margin-top:14px;padding:4px 14px;border-radius:11px;background:rgba(0,0,0,.2)}
 @media (max-width:520px){.row{flex-wrap:wrap}.row-ko{text-align:left;flex:1 1 100%}.sah{width:100px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -231,15 +250,20 @@ tr:last-child td{border-bottom:none}
 </section>
 
 <section id="phrases" hidden>
-  <h2>문장 만들기</h2>
-  <p class="h2sub">읽고 넘기는 대신 직접 조립하고 씁니다. 두 번 맞히면 완료 처리됩니다.</p>
+  <h2>회화와 작문</h2>
+  <p class="h2sub">배우기에서 자기소개와 문장 만드는 법을 익힌 뒤, 조각 조립과 작문으로 직접 써 봅니다. 두 번 맞히면 완료 처리됩니다.</p>
   <div class="switch" id="p-switch" role="group">
-    <button class="sw" data-m="build" aria-pressed="true">조각 조립</button>
+    <button class="sw" data-m="learn" aria-pressed="true">배우기</button>
+    <button class="sw" data-m="build" aria-pressed="false">조각 조립</button>
     <button class="sw" data-m="write" aria-pressed="false">작문</button>
     <button class="sw" data-m="list" aria-pressed="false">목록</button>
   </div>
-  <div class="filterbar" id="p-filter"></div>
-  <div id="p-train">
+  <div id="p-learn">
+    <div class="filterbar" id="l-filter"></div>
+    <div id="l-body"></div>
+  </div>
+  <div class="filterbar" id="p-filter" hidden></div>
+  <div id="p-train" hidden>
     <div class="task">
       <div class="task-lbl" id="p-lbl"></div>
       <div class="task-ko" id="p-ko"></div>
@@ -570,6 +594,37 @@ malo|말로|조금|🤏||Govorim malo.|조금 합니다.
 
 /* ══════════ 문장 ══════════ */
 const PDATA={
+'자기소개':`
+Dobar dan, ja sam Minsu.|도바르 단 야 삼 민수|안녕하세요, 저는 민수입니다.|ja sam + 이름
+Zovem se Minsu.|조벰 세 민수|제 이름은 민수입니다.|se는 문장의 두 번째 자리
+Iz Seula sam.|이즈 세울라 삼|서울 출신입니다.|iz + 속격: Seul → Seula
+Živim u Seulu.|지빔 우 세울루|서울에 삽니다.|u + 처격: Seul → Seulu
+Imam trideset godina.|이맘 트리데세트 고디나|서른 살입니다.|나이는 imati(가지다)로 말한다
+Imam dvadeset i dvije godine.|이맘 드바데세트 이 드비예 고디네|스물두 살입니다.|2·3·4로 끝나면 godine
+Student sam.|스투덴트 삼|학생입니다.|여성은 Studentica sam.
+Radim kao programer.|라딤 카오 프로그라메르|프로그래머로 일합니다.|kao + 주격 · 여성은 programerka
+Govorim korejski i engleski.|고보림 코레이스키 이 엔글레스키|한국어와 영어를 합니다.|
+Učim hrvatski.|우침 흐르바츠키|크로아티아어를 배우고 있어요.|
+Volim putovati.|볼림 푸토바티|여행을 좋아합니다.|volim + 동사원형
+Ovdje sam na odmoru.|오브디예 삼 나 오드모루|여기 휴가로 왔어요.|na + 처격
+Prvi put sam u Hrvatskoj.|프르비 푸트 삼 우 흐르바츠코이|크로아티아는 처음이에요.|Hrvatska → u Hrvatskoj
+A vi?|아 비|당신은요?|되물을 때 · 반말은 A ti?
+Drago mi je što smo se upoznali.|드라고 미 예 슈토 스모 세 우포즈날리|알게 되어 반가웠어요.|헤어질 때
+`,
+'작문 패턴':`
+Ne pijem kavu.|네 피옘 카부|저는 커피를 안 마셔요.|ne + 동사 · kava → kavu
+Volim kavu, ali ne pijem čaj.|볼림 카부 알리 네 피옘 차이|커피는 좋아하지만 차는 안 마셔요.|ali = 하지만
+Učim hrvatski jer volim Hrvatsku.|우침 흐르바츠키 예르 볼림 흐르바츠쿠|크로아티아가 좋아서 크로아티아어를 배워요.|jer = 왜냐하면
+Gdje živiš?|그디예 지비시|어디 살아?|의문사 + 동사
+Što radiš?|슈토 라디시|뭐 해? (직업을 물을 때도)|
+Imaš li brata?|이마시 리 브라타|남자 형제 있어?|동사 + li · 사람 남성 목적어는 -a
+Idem u Zagreb s prijateljem.|이뎀 우 자그레브 스 프리야텔옘|친구랑 자그레브에 가요.|u + 대격(방향), s + 조격
+Bio sam u Splitu.|비오 삼 우 스플리투|스플리트에 갔었어요.|과거 · 여성은 Bila sam
+Sutra ću raditi.|수트라 추 라디티|내일 일할 거예요.|ću는 두 번째 자리
+Kad sam umoran, spavam.|카드 삼 우모란 스파밤|피곤하면 자요.|kad = ~할 때 · 여성은 umorna
+Mislim da je to dobro.|미슬림 다 예 토 도브로|그게 좋다고 생각해요.|da = ~라고
+Nemam vremena, zato idem kući.|네맘 브레메나 자토 이뎀 쿠치|시간이 없어서 집에 가요.|zato = 그래서
+`,
 '첫 마디':`
 Kako ste?|카코 스테|어떻게 지내세요?|존댓말
 Kako si?|카코 시|잘 지내?|반말
@@ -1003,22 +1058,25 @@ async function showWordVerdict(ok){
 }
 
 /* ══════════ 회화 ══════════ */
-let pMode='build',pGroup='전체',pCur=null,picked=[],pAnswered=false;
+let pMode='learn',pGroup='전체',pCur=null,picked=[],pAnswered=false;
 const pf=document.getElementById('p-filter');
 PGROUPS.forEach(g=>{
   const b=document.createElement('button');
   b.className='chipf';b.textContent=g;b.setAttribute('aria-pressed',String(g==='전체'));
   b.onclick=()=>{pGroup=g;[...pf.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
-    pMode==='list'?renderList():nextPhrase();};
+    pMode==='list'?renderList():pMode==='learn'?0:nextPhrase();};
   pf.appendChild(b);
 });
 document.querySelectorAll('#p-switch .sw').forEach(sw=>{
   sw.onclick=()=>{
     pMode=sw.dataset.m;
     document.querySelectorAll('#p-switch .sw').forEach(x=>x.setAttribute('aria-pressed',String(x===sw)));
-    const list=pMode==='list';
+    const list=pMode==='list',learn=pMode==='learn';
+    document.getElementById('p-learn').hidden=!learn;
+    document.getElementById('p-filter').hidden=learn;
     document.getElementById('p-list').hidden=!list;
-    document.getElementById('p-train').hidden=list;
+    document.getElementById('p-train').hidden=list||learn;
+    if(learn)return;
     list?renderList():nextPhrase();
   };
 });
@@ -1120,6 +1178,222 @@ function renderList(){
     el.appendChild(wrap);
   });
 }
+
+/* ══════════ 배우기 (자기소개 · 작문법 · 대화) ══════════ */
+const LESSONS={
+'자기소개':{
+ intro:'처음 만난 사람에게 1분 안에 나를 소개하는 순서입니다. 각 단계의 틀에 내 정보를 끼워 넣으면 됩니다. 맨 아래에서 내 자기소개를 바로 만들어 볼 수 있습니다.',
+ practice:'자기소개',
+ steps:[
+ {t:'인사',f:'Dobar dan! (존댓말) · Bok! (친구)',p:'처음 보는 어른·점원에게는 <b>Dobar dan</b>, 또래·친구에게는 <b>Bok</b>. 아침엔 Dobro jutro, 저녁엔 Dobra večer.',
+  ex:[['Dobar dan!','도바르 단','안녕하세요! (낮)'],['Bok!','보크','안녕! (만날 때도 헤어질 때도)']]},
+ {t:'이름',f:'Zovem se + 이름. · Ja sam + 이름.',p:'직역하면 "나는 나 자신을 ~라고 부른다". <b>se</b>와 <b>sam</b>은 짧은 말이라 문장 맨 앞에 올 수 없습니다.',
+  ex:[['Zovem se Minsu.','조벰 세 민수','제 이름은 민수입니다.'],['Ja sam Minsu.','야 삼 민수','저는 민수입니다.']],tip:'✗ Se zovem Minsu. / ✗ Sam Minsu.'},
+ {t:'출신',f:'Iz + 나라·도시(속격) + sam.',p:'iz(~에서) 뒤의 명사는 속격으로 바뀝니다. 여성 -a는 <b>-e</b>로, 자음으로 끝나는 남성은 <b>-a</b>를 붙입니다.',
+  ex:[['Iz Koreje sam.','이즈 코레예 삼','한국에서 왔습니다. (Koreja → Koreje)'],['Iz Seula sam.','이즈 세울라 삼','서울 출신입니다. (Seul → Seula)']]},
+ {t:'나이',f:'Imam + 숫자 + godina/godine/godinu.',p:'나이는 <b>imati(가지다)</b>로 말합니다: "나는 서른 해를 가졌다". 끝자리가 <b>1</b>이면 godinu, <b>2·3·4</b>면 godine, 나머지(11–14 포함)는 godina.',
+  ex:[['Imam trideset godina.','이맘 트리데세트 고디나','서른 살입니다.'],['Imam dvadeset i dvije godine.','이맘 드바데세트 이 드비예 고디네','스물두 살입니다.'],['Imam dvadeset i jednu godinu.','이맘 드바데세트 이 예드누 고디누','스물한 살입니다.']]},
+ {t:'사는 곳',f:'Živim u + 도시(처격).',p:'u(~에서, 위치) 뒤는 처격. 자음 끝 남성 도시는 <b>-u</b>, 여성 -a는 <b>-i</b>(Hrvatska처럼 형용사형이면 -oj).',
+  ex:[['Živim u Seulu.','지빔 우 세울루','서울에 삽니다.'],['Živim u Koreji.','지빔 우 코레이','한국에 삽니다.'],['Živim u Hrvatskoj.','지빔 우 흐르바츠코이','크로아티아에 삽니다.']]},
+ {t:'직업',f:'직업 + sam. · Radim kao + 직업.',p:'관사가 없어서 직업 이름만 넣으면 됩니다. 직업명은 <b>화자의 성별</b>에 맞춥니다: student / studentica, programer / programerka.',
+  ex:[['Student sam.','스투덴트 삼','(남) 학생입니다.'],['Studentica sam.','스투덴티차 삼','(여) 학생입니다.'],['Radim kao inženjer.','라딤 카오 인제녜르','엔지니어로 일합니다.']]},
+ {t:'언어',f:'Govorim + 언어. · Učim hrvatski.',p:'언어 이름은 소문자로 씁니다: korejski, engleski, hrvatski. 크로아티아어를 배운다고 말하면 대화가 훨씬 부드러워집니다.',
+  ex:[['Govorim korejski i engleski.','고보림 코레이스키 이 엔글레스키','한국어와 영어를 합니다.'],['Učim hrvatski, ali govorim samo malo.','우침 흐르바츠키 알리 고보림 사모 말로','크로아티아어를 배우는데 아직 조금밖에 못 해요.']]},
+ {t:'취미',f:'Volim + 동사원형 / 명사(대격).',p:'volim(좋아한다) 뒤에 동사원형(-ti, -ći)을 그대로 붙이면 됩니다.',
+  ex:[['Volim putovati.','볼림 푸토바티','여행을 좋아합니다.'],['Volim kuhati i čitati.','볼림 쿠하티 이 치타티','요리와 독서를 좋아합니다.'],['Volim more.','볼림 모레','바다를 좋아합니다.']]},
+ {t:'온 이유',f:'Ovdje sam + na odmoru / poslovno.',p:'크로아티아에서는 "여기 왜 왔어요?"를 꼭 묻습니다. 미리 한 문장 준비해 두세요.',
+  ex:[['Ovdje sam na odmoru.','오브디예 삼 나 오드모루','휴가로 왔어요.'],['Ovdje sam poslovno.','오브디예 삼 포슬로브노','출장 왔어요.'],['Prvi put sam u Hrvatskoj.','프르비 푸트 삼 우 흐르바츠코이','크로아티아는 처음이에요.']]},
+ {t:'되묻고 마무리',f:'A vi? · Drago mi je!',p:'소개를 마치면 <b>A vi?</b>(당신은요?)로 공을 넘기세요. 반말이면 <b>A ti?</b> 존댓말은 동사가 <b>-te</b>로, 반말은 <b>-š</b>로 끝납니다: Odakle ste? / Odakle si?',
+  ex:[['A vi?','아 비','당신은요?'],['Drago mi je!','드라고 미 예','만나서 반갑습니다!'],['Drago mi je što smo se upoznali.','드라고 미 예 슈토 스모 세 우포즈날리','알게 되어 반가웠어요. (헤어질 때)']]}
+ ],
+ builder:true},
+'작문하는 법':{
+ intro:'한국어 문장을 크로아티아어로 옮길 때 이 순서대로 생각하면 됩니다. 단계마다 정해진 틀이 있어서, 틀만 익히면 단어를 바꿔 끼워 새 문장을 만들 수 있습니다.',
+ practice:'작문 패턴',
+ steps:[
+ {t:'동사부터 고른다',f:'ja -m · ti -š · on/ona - · mi -mo · vi -te · oni -ju/-e',p:'동사 어미에 주어가 들어 있어서 <b>주어는 보통 생략</b>합니다. Govorim = 나는 말한다. Ja govorim은 "<b>나는</b> 말한다"는 강조.',
+  ex:[['Govorim.','고보림','(나는) 말한다.'],['Govoriš.','고보리시','(너는) 말한다.'],['Govorite.','고보리테','(당신은) 말한다.']]},
+ {t:'어순은 주어 – 동사 – 목적어',f:'(주어) + 동사 + 목적어 + 장소/시간',p:'한국어처럼 동사를 끝에 두지 말고 <b>동사를 앞쪽</b>에 두세요. 어순은 꽤 자유롭지만, 강조하거나 새로운 정보일수록 뒤로 갑니다.',
+  ex:[['Ana pije kavu.','아나 피예 카부','아나는 커피를 마신다.'],['Pijem kavu ujutro.','피옘 카부 우유트로','나는 아침에 커피를 마신다.']]},
+ {t:'목적어는 대격으로 바꾼다',f:'여성 -a → -u · 남성 사물 그대로 · 남성 사람·동물 +a · 중성 그대로',p:'"~을/를"에 해당하는 말은 어미를 바꿉니다. 여성 명사만 조심하면 대부분 해결됩니다.',
+  ex:[['Volim kavu.','볼림 카부','커피를 좋아한다. (kava → kavu)'],['Imam brata.','이맘 브라타','남자 형제가 있다. (brat → brata)'],['Pijem pivo.','피옘 피보','맥주를 마신다. (중성은 그대로)']]},
+ {t:'짧은 말은 두 번째 자리',f:'sam · si · je · smo · ste · su · se · mi · me · ti · te · ću · li',p:'이 작은 단어들은 문장의 <b>첫 번째 덩어리 바로 뒤</b>에 옵니다. 문장 맨 앞이나 맨 끝에 두지 않습니다.',
+  ex:[['Zovem se Ana.','조벰 세 아나','이름은 아나야.'],['Ja se zovem Ana.','야 세 조벰 아나','나는 이름이 아나야.'],['Sutra ću raditi.','수트라 추 라디티','내일 일할 거야.']],tip:'✗ Se zovem Ana. / ✗ Ću raditi sutra.'},
+ {t:'부정은 ne + 동사',f:'ne + 동사 · 예외: nisam, nemam, neću',p:'동사 바로 앞에 <b>ne</b>만 붙입니다. 단, biti(이다)·imati(있다)·htjeti(~할 것이다)는 한 단어로 합쳐집니다. "없다(nemam)" 뒤 명사는 속격.',
+  ex:[['Ne pijem kavu.','네 피옘 카부','커피를 안 마셔.'],['Nisam umoran.','니삼 우모란','피곤하지 않아.'],['Nemam vremena.','네맘 브레메나','시간이 없어. (vrijeme → vremena)']]},
+ {t:'질문 만들기',f:'동사 + li …? · 의문사 + 동사 …?',p:'예/아니오 질문은 <b>동사 바로 뒤에 li</b>. 무엇·어디·언제를 물을 때는 의문사를 맨 앞에: <b>što</b> 무엇, <b>gdje</b> 어디, <b>kada</b> 언제, <b>tko</b> 누구, <b>zašto</b> 왜, <b>kako</b> 어떻게.',
+  ex:[['Govorite li engleski?','고보리테 리 엔글레스키','영어 하세요?'],['Imaš li brata?','이마시 리 브라타','남자 형제 있어?'],['Gdje živiš?','그디예 지비시','어디 살아?'],['Zašto učiš hrvatski?','자슈토 우치시 흐르바츠키','왜 크로아티아어 배워?']]},
+ {t:'장소·방향은 전치사 + 격',f:'u/na + 처격(어디에) · u/na + 대격(어디로) · iz + 속격(어디서) · s + 조격(누구와)',p:'전치사를 고르면 격이 자동으로 정해집니다. "있다"는 처격, "간다"는 대격이라는 것만 기억하세요.',
+  ex:[['Živim u Zagrebu.','지빔 우 자그레부','자그레브에 산다. (위치)'],['Idem u Zagreb.','이뎀 우 자그레브','자그레브에 간다. (방향)'],['Idem s prijateljem.','이뎀 스 프리야텔옘','친구랑 간다.']]},
+ {t:'시제 바꾸기',f:'과거: -o/-la + sam · 미래: 동사원형 + ću',p:'과거는 화자 성별에 따라 <b>-o(남)/-la(여)</b> + sam. 미래는 ću(나), ćeš(너), će(그), ćemo, ćete, će. Radit ću처럼 ću가 뒤에 오면 동사원형 끝 -i를 뺍니다.',
+  ex:[['Radio sam. / Radila sam.','라디오 삼 / 라딜라 삼','(남/여) 일했다.'],['Bio sam u Splitu.','비오 삼 우 스플리투','스플리트에 있었다(갔었다).'],['Radit ću sutra.','라디트 추 수트라','내일 일할 거야.']]},
+ {t:'문장 잇기',f:'i 그리고 · a 그런데/반면 · ali 하지만 · jer 왜냐하면 · zato 그래서 · kad ~할 때 · da ~라고',p:'짧은 문장 두 개를 접속사로 이으면 금방 긴 문장이 됩니다. 접속사 앞에는 보통 쉼표를 찍습니다(i, jer 앞은 생략 가능).',
+  ex:[['Volim kavu, ali ne pijem čaj.','볼림 카부 알리 네 피옘 차이','커피는 좋아하지만 차는 안 마셔.'],['Učim hrvatski jer volim Hrvatsku.','우침 흐르바츠키 예르 볼림 흐르바츠쿠','크로아티아가 좋아서 크로아티아어를 배워.'],['Mislim da je to dobro.','미슬림 다 예 토 도브로','그게 좋다고 생각해.']]},
+ {t:'예제: 처음부터 끝까지',f:'"나는 내일 친구랑 스플리트에 갈 거야."',p:'<ol><li>동사: 가다 = <b>ići</b> → 미래 "갈 거야" = <b>ići ću</b></li><li>짧은 말 ću는 두 번째 자리: 첫 덩어리를 <b>Sutra</b>로 → <b>Sutra ću ići</b></li><li>방향 "스플리트로" = u + 대격 → <b>u Split</b></li><li>"친구랑" = s + 조격 → <b>s prijateljem</b></li><li>합치기 → <b>Sutra ću ići u Split s prijateljem.</b></li></ol>',
+  ex:[['Sutra ću ići u Split s prijateljem.','수트라 추 이치 우 스플리트 스 프리야텔옘','나는 내일 친구랑 스플리트에 갈 거야.']]}
+ ]},
+'대화 예시':{
+ intro:'자기소개가 실제 대화에서 어떻게 오가는지 보여주는 예시입니다. 줄마다 ▶를 눌러 듣고, 내 정보로 바꿔 소리 내어 따라 해 보세요.',
+ practice:'자기소개',
+ steps:[
+ {t:'처음 만났을 때 (존댓말)',dlg:[
+  ['A','Dobar dan! Ja sam Ana.','도바르 단 야 삼 아나','안녕하세요! 저는 아나예요.'],
+  ['B','Dobar dan! Zovem se Minsu. Drago mi je.','도바르 단 조벰 세 민수 드라고 미 예','안녕하세요! 민수라고 합니다. 반갑습니다.'],
+  ['A','Drago mi je. Odakle ste?','드라고 미 예 오다클레 스테','반가워요. 어디서 오셨어요?'],
+  ['B','Iz Koreje sam, iz Seula. A vi?','이즈 코레예 삼 이즈 세울라 아 비','한국 서울에서 왔어요. 당신은요?'],
+  ['A','Ja sam iz Zagreba. Što radite u Hrvatskoj?','야 삼 이즈 자그레바 슈토 라디테 우 흐르바츠코이','저는 자그레브 사람이에요. 크로아티아에서 뭐 하세요?'],
+  ['B','Na odmoru sam. Učim i hrvatski.','나 오드모루 삼 우침 이 흐르바츠키','휴가 중이에요. 크로아티아어도 배우고 있어요.'],
+  ['A','Super! Govorite jako dobro.','수페르 고보리테 야코 도브로','대단해요! 정말 잘하시네요.'],
+  ['B','Hvala, ali govorim samo malo.','흐발라 알리 고보림 사모 말로','고마워요, 그래도 조금밖에 못 해요.']]},
+ {t:'또래 친구와 (반말)',dlg:[
+  ['A','Bok! Kako se zoveš?','보크 카코 세 조베시','안녕! 이름이 뭐야?'],
+  ['B','Bok! Ja sam Jiwoo. A ti?','보크 야 삼 지우 아 티','안녕! 난 지우야. 너는?'],
+  ['A','Ja sam Marko. Odakle si?','야 삼 마르코 오다클레 시','난 마르코. 어디서 왔어?'],
+  ['B','Iz Koreje. Studiram ovdje.','이즈 코레예 스투디람 오브디예','한국. 여기서 공부해.'],
+  ['A','Stvarno? Što studiraš?','스트바르노 슈토 스투디라시','진짜? 뭐 전공해?'],
+  ['B','Ekonomiju. A ti, što radiš?','에코노미유 아 티 슈토 라디시','경제학. 너는 뭐 해?'],
+  ['A','Radim kao kuhar u restoranu.','라딤 카오 쿠하르 우 레스토라누','식당에서 요리사로 일해.'],
+  ['B','Super! Vidimo se!','수페르 비디모 세','멋지다! 또 보자!']]},
+ {t:'직장·모임에서 (존댓말)',dlg:[
+  ['A','Dobro jutro! Vi ste novi kolega?','도브로 유트로 비 스테 노비 콜레가','좋은 아침이에요! 새로 오신 동료분이세요?'],
+  ['B','Da, ja sam Seoyeon. Drago mi je.','다 야 삼 서연 드라고 미 예','네, 저는 서연이에요. 반갑습니다.'],
+  ['A','Ivan, drago mi je. Čime se bavite?','이반 드라고 미 예 치메 세 바비테','이반입니다, 반가워요. 무슨 일 하세요?'],
+  ['B','Programerka sam. Radim na novoj aplikaciji.','프로그라메르카 삼 라딤 나 노보이 아플리카치이','프로그래머예요. 새 앱 작업을 하고 있어요.'],
+  ['A','Odlično. Koliko dugo ste u Hrvatskoj?','오들리치노 콜리코 두고 스테 우 흐르바츠코이','좋네요. 크로아티아에는 얼마나 계셨어요?'],
+  ['B','Tek dva mjeseca. Još učim jezik.','테크 드바 미예세차 요시 우침 예지크','이제 두 달이에요. 아직 언어를 배우는 중이에요.']]}
+ ]}
+};
+const LNAMES=Object.keys(LESSONS);
+let lCur=LNAMES[0];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function spkBtn(text){const b=document.createElement('button');b.className='spk';b.textContent='▶';
+  b.setAttribute('aria-label',text+' 발음 듣기');b.onclick=()=>speak(text);return b;}
+function exRow(hr,r,ko,who){
+  const row=document.createElement('div');row.className='row';
+  if(who){const w=document.createElement('div');w.className='who'+(who==='B'?' b':'');w.textContent=who;row.appendChild(w);}
+  row.insertAdjacentHTML('beforeend',`<div class="row-hr">${esc(hr)}${r?`<i>${esc(r)}</i>`:''}</div><div class="row-ko">${esc(ko)}</div>`);
+  row.appendChild(spkBtn(hr));return row;
+}
+const lf=document.getElementById('l-filter');
+LNAMES.forEach(n=>{
+  const b=document.createElement('button');b.className='chipf';b.textContent=n;b.setAttribute('aria-pressed',String(n===lCur));
+  b.onclick=()=>{lCur=n;[...lf.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderLesson();};
+  lf.appendChild(b);
+});
+function goPractice(group,mode){
+  pGroup=group;[...pf.children].forEach(x=>x.setAttribute('aria-pressed',String(x.textContent===group)));
+  document.querySelector(`#p-switch .sw[data-m="${mode}"]`).click();
+}
+function renderLesson(){
+  const L=LESSONS[lCur],el=document.getElementById('l-body');el.innerHTML='';
+  el.insertAdjacentHTML('beforeend',`<p class="h2sub">${L.intro}</p>`);
+  L.steps.forEach((st,i)=>{
+    const c=document.createElement('div');c.className='lesson';
+    c.innerHTML=`<div class="lesson-n">${L.steps.length>1?String(i+1).padStart(2,'0')+' · ':''}${lCur}</div><div class="lesson-t">${st.t}</div>`+
+      (st.f?`<div class="formula">${st.f}</div>`:'')+(st.p?`<div class="lesson-p">${st.p}</div>`:'');
+    (st.ex||[]).forEach(e=>c.appendChild(exRow(e[0],e[1],e[2])));
+    if(st.dlg){
+      (st.dlg).forEach(d=>c.appendChild(exRow(d[1],d[2],d[3],d[0])));
+      const br=document.createElement('div');br.className='btnrow';
+      mkBtn(br,'🔊 대화 전체 듣기','',()=>speak(st.dlg.map(d=>d[1]).join(' ')));
+      c.appendChild(br);
+    }
+    if(st.tip)c.insertAdjacentHTML('beforeend',`<div class="tip">${st.tip}</div>`);
+    el.appendChild(c);
+  });
+  if(L.builder)renderBuilder(el);
+  const br=document.createElement('div');br.className='btnrow';
+  mkBtn(br,`‘${L.practice}’ 조각 조립 연습`,'',()=>goPractice(L.practice,'build'));
+  mkBtn(br,`‘${L.practice}’ 작문 연습`,'primary',()=>goPractice(L.practice,'write'));
+  el.appendChild(br);
+}
+
+/* 내 자기소개 만들기 */
+const CITIES=[['','선택 안 함','',''],['Seul','서울','Seula','Seulu'],['Busan','부산','Busana','Busanu'],['Incheon','인천','Incheona','Incheonu'],
+  ['Daejeon','대전','Daejeona','Daejeonu'],['Zagreb','자그레브','Zagreba','Zagrebu'],['Split','스플리트','Splita','Splitu']];
+const LIVES=[['Seulu','서울'],['Busanu','부산'],['Incheonu','인천'],['Daejeonu','대전'],['Koreji','한국'],['Zagrebu','자그레브'],['Splitu','스플리트'],['Hrvatskoj','크로아티아']];
+const JOBS=[['student','studentica','학생'],['programer','programerka','프로그래머'],['inženjer','inženjerka','엔지니어'],['dizajner','dizajnerica','디자이너'],
+  ['učitelj','učiteljica','교사'],['liječnik','liječnica','의사'],['kuhar','kuharica','요리사'],['službenik','službenica','회사원'],['umirovljenik','umirovljenica','은퇴자']];
+const LANGS=[['korejski','한국어'],['korejski i engleski','한국어와 영어'],['korejski, engleski i japanski','한국어, 영어, 일본어']];
+const HOBBIES=[['putovati','여행하기'],['kuhati','요리하기'],['čitati','책 읽기'],['plivati','수영하기'],['fotografirati','사진 찍기'],
+  ['planinariti','등산하기'],['slušati glazbu','음악 듣기'],['gledati filmove','영화 보기']];
+const WHY=[['','선택 안 함',''],['Ovdje sam na odmoru.','휴가','휴가로 왔어요.'],['Ovdje sam poslovno.','출장','출장 왔어요.'],
+  ['Ovdje studiram.','유학','여기서 공부하고 있어요.'],['Ovdje živim i radim.','거주·일','여기서 살면서 일해요.']];
+const UF=['','jednu','dvije','tri','četiri','pet','šest','sedam','osam','devet'];
+const TEEN=['deset','jedanaest','dvanaest','trinaest','četrnaest','petnaest','šesnaest','sedamnaest','osamnaest','devetnaest'];
+const TENS=['','','dvadeset','trideset','četrdeset','pedeset','šezdeset','sedamdeset','osamdeset','devedeset'];
+function ageHr(n){
+  let w;
+  if(n<10)w=UF[n];else if(n<20)w=TEEN[n-10];
+  else{const t=TENS[Math.floor(n/10)],u=n%10;w=u?t+' i '+UF[u]:t;}
+  const l=n%10,h=n%100;
+  const noun=(l===1&&h!==11)?'godinu':(l>=2&&l<=4&&!(h>=12&&h<=14))?'godine':'godina';
+  return w+' '+noun;
+}
+let me={name:'',sex:'m',city:'Seul',age:'',live:'Seulu',job:1,lang:1,hob:['putovati'],why:1};
+try{Object.assign(me,JSON.parse(ls.g('hr:me')||'{}'));}catch(e){}
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function introLines(){
+  const L=[],name=me.name.trim()||'Minsu';
+  L.push(['Dobar dan!','안녕하세요!']);
+  L.push([`Zovem se ${name}.`,`제 이름은 ${name}입니다.`]);
+  const c=CITIES.find(x=>x[0]===me.city);
+  L.push(c&&c[0]?[`Iz Koreje sam, iz ${c[2]}.`,`한국 ${c[1]}에서 왔습니다.`]:['Iz Koreje sam.','한국에서 왔습니다.']);
+  const a=parseInt(me.age,10);
+  if(a>=1&&a<=99)L.push([`Imam ${ageHr(a)}.`,`${a}살입니다.`]);
+  const lv=LIVES.find(x=>x[0]===me.live);if(lv)L.push([`Živim u ${lv[0]}.`,`${lv[1]}에 삽니다.`]);
+  const j=JOBS[me.job];if(j)L.push([`${cap(me.sex==='f'?j[1]:j[0])} sam.`,`저는 ${j[2]}입니다.`]);
+  const lg=LANGS[me.lang];if(lg)L.push([`Govorim ${lg[0]}.`,`${lg[1]}를 합니다.`]);
+  L.push(['Učim hrvatski, ali govorim samo malo.','크로아티아어를 배우고 있는데 아직 조금밖에 못 해요.']);
+  const hs=HOBBIES.filter(h=>me.hob.includes(h[0]));
+  if(hs.length){const hr=hs.map(h=>h[0]),ko=hs.map(h=>h[1]);
+    const joined=hr.length>1?hr.slice(0,-1).join(', ')+' i '+hr[hr.length-1]:hr[0];
+    L.push([`Volim ${joined}.`,`${ko.join(', ')}를 좋아합니다.`]);}
+  const w=WHY[me.why];if(w&&w[0])L.push([w[0],w[2]]);
+  L.push(['Drago mi je!','만나서 반갑습니다!']);
+  return L;
+}
+function opts(list,sel,val,lbl){return list.map((x,i)=>`<option value="${esc(val(x,i))}"${String(val(x,i))===String(sel)?' selected':''}>${esc(lbl(x))}</option>`).join('');}
+function renderBuilder(el){
+  const c=document.createElement('div');c.className='lesson';
+  c.innerHTML=`<div class="lesson-n">직접 해 보기</div><div class="lesson-t">내 자기소개 만들기</div>
+  <div class="lesson-p">내 정보를 고르면 문법(격 변화, 나이 표현, 성별 어미)을 맞춘 자기소개가 만들어집니다. 소리 내어 따라 읽고 외워 두세요.</div>
+  <div class="form">
+   <label class="field">이름 (로마자)<input id="me-name" maxlength="30" placeholder="Minsu" value="${esc(me.name)}"></label>
+   <label class="field">성별 (어미가 달라짐)<select id="me-sex"><option value="m"${me.sex==='m'?' selected':''}>남성</option><option value="f"${me.sex==='f'?' selected':''}>여성</option></select></label>
+   <label class="field">나이<input id="me-age" type="number" min="1" max="99" inputmode="numeric" placeholder="예: 30" value="${esc(me.age)}"></label>
+   <label class="field">고향 (한국)<select id="me-city">${opts(CITIES,me.city,x=>x[0],x=>x[1])}</select></label>
+   <label class="field">사는 곳<select id="me-live">${opts(LIVES,me.live,x=>x[0],x=>x[1])}</select></label>
+   <label class="field">직업<select id="me-job">${opts(JOBS,me.job,(x,i)=>i,x=>x[2])}</select></label>
+   <label class="field">할 줄 아는 언어<select id="me-lang">${opts(LANGS,me.lang,(x,i)=>i,x=>x[1])}</select></label>
+   <label class="field">온 이유<select id="me-why">${opts(WHY,me.why,(x,i)=>i,x=>x[1])}</select></label>
+  </div>
+  <div class="field" style="margin-top:10px">취미 (여러 개 선택 가능)<div class="chips" id="me-hob"></div></div>
+  <div class="intro-out" id="me-out"></div>
+  <div class="btnrow" id="me-btns"></div>`;
+  el.appendChild(c);
+  const hob=c.querySelector('#me-hob');
+  HOBBIES.forEach(h=>{const b=document.createElement('button');b.className='chipf';b.type='button';b.textContent=h[1];
+    b.setAttribute('aria-pressed',String(me.hob.includes(h[0])));
+    b.onclick=()=>{me.hob=me.hob.includes(h[0])?me.hob.filter(x=>x!==h[0]):[...me.hob,h[0]];
+      b.setAttribute('aria-pressed',String(me.hob.includes(h[0])));upd();};
+    hob.appendChild(b);});
+  const out=c.querySelector('#me-out');
+  function upd(){
+    me.name=c.querySelector('#me-name').value.replace(/[<>]/g,'');me.sex=c.querySelector('#me-sex').value;
+    me.age=c.querySelector('#me-age').value;me.city=c.querySelector('#me-city').value;me.live=c.querySelector('#me-live').value;
+    me.job=+c.querySelector('#me-job').value;me.lang=+c.querySelector('#me-lang').value;me.why=+c.querySelector('#me-why').value;
+    ls.s('hr:me',JSON.stringify(me));
+    out.innerHTML='';introLines().forEach(l=>out.appendChild(exRow(l[0],'',l[1])));
+  }
+  c.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',upd));
+  const btns=c.querySelector('#me-btns');
+  mkBtn(btns,'🔊 전체 듣기','primary',()=>speak(introLines().map(l=>l[0]).join(' ')));
+  mkBtn(btns,'복사','',async e=>{const t=introLines().map(l=>l[0]).join(' ');
+    try{await navigator.clipboard.writeText(t);e.target.textContent='복사됨 ✓';}catch(_){prompt('아래 문장을 복사하세요',t);}});
+  upd();
+}
+renderLesson();
 
 /* ══════════ 문법 표 ══════════ */
 function fillTable(id,rows,hrCols){
