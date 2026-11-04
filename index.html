@@ -1621,6 +1621,6 @@ document.getElementById('reset').onclick=async()=>{
 (async()=>{await load();renderBoard();pickWord();nextPhrase();onMineChange();})();
 </script>
 <button onclick="setupSync()" title="동기화 설정" style="position:fixed;right:12px;bottom:12px;z-index:50;border:1px solid var(--line);background:var(--ink);color:var(--foam);border-radius:50%;width:44px;height:44px;font-size:20px">⟳</button>
-<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js")</script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js",{updateViaCache:"none"})</script>
 </body>
 </html>
