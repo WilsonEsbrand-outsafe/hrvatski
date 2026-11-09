@@ -914,7 +914,9 @@ for(let i=0;i<5;i++){const d=document.createElement('div');d.className='dot';dot
    4) 묶음을 다 끝내면 다음 새 묶음 시작
    5) 4단계(1일)·외운 단어는 예정보다 일찍 꺼내지 않음 → 할 게 없으면 대기 화면 */
 const BATCH=5;
-let introducing=false;
+let introducing=false, wWaitT=0;
+// 앱을 다시 열었을 때(백그라운드에서 복귀) 대기 화면이 그대로 남지 않도록 다시 고름
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!cur&&wMode==='learn'&&srs[WORDS[0].hr])pickWord();});
 function avoidLast(list){return list.length>1&&list[0].hr===lastHr?list[1]:list[0];}
 function byDue(a,b){return srs[a.hr].due-srs[b.hr].due;}
 function pickWord(early){
@@ -952,9 +954,21 @@ function renderWord(){
     [...dotsEl.children].forEach(d=>d.className='dot');
     stageName.textContent='—';stageName.className='stage-name';
     if(!pool.length){stTop.innerHTML='<div class="st-ask">이 분류에 단어가 없습니다.</div>';return;}
-    const next=Math.min(...pool.map(w=>srs[w.hr].due));
+    const now=Date.now();
+    const later=pool.map(w=>srs[w.hr].due).filter(d=>d>now);
+    const next=later.length?Math.min(...later):now;
+    // 다른 분류에 아직 배울/복습할 단어가 남아 있으면 그쪽으로 안내
+    const left=wCat==='전체'?0:WORDS.filter(w=>{const s=srs[w.hr];return s.box<4||s.due<=now;}).length;
+    if(left){
+      stTop.innerHTML=`<div class="st-icon">✅</div><div class="st-main ko">'${wCat}' 분류는 지금 할 단어를 다 했습니다</div>
+        <div class="st-ask">다른 분류에 배우거나 복습할 단어가 ${left}개 남아 있습니다.</div>`;
+      mkBtn(wBtns,'전체 단어로 계속하기','primary',()=>{wCat='전체';[...wf.children].forEach(x=>x.setAttribute('aria-pressed',String(x.textContent==='전체')));refreshWords();});
+    } else
     stTop.innerHTML=`<div class="st-icon">☕</div><div class="st-main ko">지금 복습할 단어가 없습니다</div>
-      <div class="st-ask">다음 복습은 약 ${fmtWait(next-Date.now())} 뒤입니다.</div>`;
+      <div class="st-ask">다음 복습은 약 ${fmtWait(next-now)} 뒤입니다.</div>`;
+    // 대기 화면을 띄워 둔 채 복습 시각이 되면 자동으로 다음 단어를 꺼냄
+    clearTimeout(wWaitT);
+    if(next>now&&next-now<864e5)wWaitT=setTimeout(()=>{if(!cur&&wMode==='learn')pickWord();},next-now+500);
     mkBtn(wBtns,'미리 복습하기','ghost',()=>pickWord(true));
     return;
   }
