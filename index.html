@@ -914,7 +914,7 @@ for(let i=0;i<5;i++){const d=document.createElement('div');d.className='dot';dot
    4) 묶음을 다 끝내면 다음 새 묶음 시작
    5) 4단계(1일)·외운 단어는 예정보다 일찍 꺼내지 않음 → 할 게 없으면 대기 화면 */
 const BATCH=5;
-let introducing=false, wWaitT=0;
+let introducing=false, wWaitT=0, wEarly=false, earlySeen=new Set();
 // 앱을 다시 열었을 때(백그라운드에서 복귀) 대기 화면이 그대로 남지 않도록 다시 고름
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!cur&&wMode==='learn'&&srs[WORDS[0].hr])pickWord();});
 function avoidLast(list){return list.length>1&&list[0].hr===lastHr?list[1]:list[0];}
@@ -934,8 +934,17 @@ function pickWord(early){
     const ready=batch.filter(w=>st(w).due<=now);
     cur=avoidLast(ready.length?ready:batch);
   }
-  else if(early===true&&pool.length)cur=avoidLast(pool.slice().sort(byDue));
+  else if(early===true&&pool.length){
+    // 미리 복습: 이번에 아직 안 본 단어부터, 다 돌면 처음부터 다시
+    let left=pool.filter(w=>!earlySeen.has(w.hr));
+    if(!left.length){earlySeen.clear();left=pool;}
+    cur=avoidLast(left.slice().sort(byDue));
+    earlySeen.add(cur.hr);
+  }
   else cur=null;
+  // '미리 복습하기'를 누른 뒤에는 '다음'을 눌러도 미리 복습을 이어감
+  wEarly=early===true;
+  if(!wEarly)earlySeen.clear();
   wAnswered=false;
   renderWord();
 }
@@ -1041,7 +1050,7 @@ function stageType(hint){
       tin.focus();tin.setSelectionRange(s+1,s+1);};
     dia.appendChild(b);
   });
-  tin.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();wAnswered?pickWord():checkWord();}});
+  tin.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();wAnswered?pickWord(wEarly):checkWord();}});
   mkBtn(wBtns,'확인','primary',checkWord);
   mkBtn(wBtns,'모르겠음','ghost',()=>{if(!wAnswered){wAnswered=true;showWordVerdict(false);}});
 }
@@ -1069,7 +1078,7 @@ async function showWordVerdict(ok){
     ${cur.ex?`<div class="verdict-r" style="color:var(--stone-dim);margin-top:6px">${cur.ex} — ${cur.exko}</div>`:''}`;
   speak(cur.hr);
   wBtns.innerHTML='';
-  mkBtn(wBtns,'다음','primary',pickWord);
+  mkBtn(wBtns,'다음','primary',()=>pickWord(wEarly));
   mkBtn(wBtns,'🔊','ghost',()=>speak(cur.ex||cur.hr));
 }
 
